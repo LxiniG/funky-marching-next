@@ -1,0 +1,82 @@
+.contactPage {
+    max-width: 1200px;
+    margin: 60px auto 0 auto;
+    padding: 0 1.5rem 60px 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.contactTitle {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    color: #fff;
+}
+
+.cardsRow {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.contactCard {
+    background: #181818;
+    color: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px 0 #0004;
+    border: 1.5px solid #333;
+    min-width: 270px;
+    max-width: 340px;
+    padding: 2.2rem 2rem 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.18s, transform 0.18s cubic-bezier(.4, 1.6, .6, 1);
+    will-change: transform;
+    perspective: 600px;
+    overflow: visible;
+}
+
+.contactCard:hover {
+    transform: rotateY(10deg) rotateX(3deg) scale(1.04);
+    box-shadow: 0 8px 40px 0 #e5464630;
+}
+
+.contactLogo {
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    width: 100px;
+    height: 80px;
+    object-fit: contain;
+    opacity: 0.92;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.contactContent {
+    margin-top: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 1.08rem;
+    z-index: 1;
+}
+
+.contactContent h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #e54646;
+}
+
+.contactContent a {
+    color: #e54646;
+    text-decoration: underline;
+    word-break: break-all;
+}

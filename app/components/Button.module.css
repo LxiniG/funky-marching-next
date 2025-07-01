@@ -1,0 +1,30 @@
+.fmbButton {
+    background-color: white;
+    /* Tomato color */
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fmbButton:hover {
+    transform: scale(1.05);
+}
+
+.buttonText {
+    font-weight: bold;
+    font-size: 1rem;
+    color: black;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}

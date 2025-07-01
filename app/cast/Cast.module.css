@@ -1,0 +1,65 @@
+.castsPage {
+  max-width: 1200px;
+  margin: 60px auto 0 auto;
+  padding: 0 1.5rem 60px 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.castsTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  color: #fff;
+}
+
+.castsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.castCard {
+  background: rgba(24, 24, 24, 0.85);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 #0004;
+  padding: 1.2rem 1.2rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.18s, box-shadow 0.18s;
+  border: 1px solid #333;
+}
+
+.castCard:hover {
+  transform: scale(1.04) translateY(-4px);
+  box-shadow: 0 8px 40px 0 #0006;
+}
+
+.castImg {
+  width: 100%;
+  max-width: 320px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 2px 12px 0 #0003;
+}
+
+.castName {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.5rem 0 0.2rem 0;
+  color: #fff;
+  text-align: center;
+}
+
+.castDesc {
+  color: #ccc;
+  font-size: 1.05rem;
+  text-align: center;
+  margin: 0;
+}

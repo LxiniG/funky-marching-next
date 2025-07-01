@@ -1,0 +1,171 @@
+.bgBlur {
+    position: fixed;
+    top: 250px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -9999;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(40px) brightness(0.3) saturate(1.2);
+    opacity: 0.7;
+    pointer-events: none;
+    transition: background-image 0.3s, filter 0.3s;
+}
+
+.galleryPage {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1100px;
+    align-items: center;
+    justify-content: center;
+    margin: 60px auto 0 auto;
+    padding-bottom: 60px;
+    position: relative;
+    z-index: 1;
+}
+
+.sliderBox {
+    position: relative;
+    background: rgba(24, 24, 24, 0.45);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 60px;
+    align-items: center;
+    gap: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 0 10px 4px #171717;
+    padding: .25rem;
+    margin-bottom: 0;
+    width: fit-content;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.sliderBox button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sliderBox button.active,
+.sliderBox button:disabled {
+    background: rgba(24, 24, 24, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sliderBox button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.galleryContent {
+    display: flex;
+    flex-direction: row;
+    gap: 2.5rem;
+    align-items: flex-start;
+    margin-top: 4.5rem;
+}
+
+.bigImageBox {
+    flex: 1 1 60%;
+    max-width: 800px;
+    min-width: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.bigImage {
+    border-radius: 12px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 0 0 40px 0px #000a;
+}
+
+.imageTextBox {
+    width: 100%;
+    max-width: 600px;
+    text-align: left;
+    margin-top: 1rem;
+}
+
+.imageTitle {
+    font-weight: 600;
+    color: #fff;
+}
+
+.imageDesc {
+    margin: 0;
+    color: #ccc;
+}
+
+.previewList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    margin-left: 1.2rem;
+}
+
+.preview {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 6px 1px #0006;
+}
+
+.preview.selected {
+    border: 2px solid #fff;
+    box-shadow: 0 2px 10px 2px #fff2;
+}
+
+.previewImg {
+    display: block;
+    width: 90px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.comingSoon {
+    color: #aaa;
+    margin-top: 6rem;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .galleryContent {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .previewList {
+        flex-direction: row;
+        margin-left: 0;
+        gap: 0.7rem;
+        justify-content: flex-start;
+    }
+
+    .bigImageBox {
+        max-width: 100vw;
+        width: 100%;
+        padding: 0;
+    }
+
+}

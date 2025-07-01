@@ -1,0 +1,42 @@
+.impressum-container {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    display: flex;
+    max-width: 1000px;
+    margin: 60px auto;
+    gap: .5rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    color: white;
+
+}
+
+.impressum-container h1 {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.impressum-container h2 {
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.impressum-container p {
+    text-align: center;
+    margin: 0 0 1.2rem 0;
+}
+
+.disclaimer-text {
+    color: rgba(255, 255, 255, 0.718);
+}
+
+.disclaimer-point {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.disclaimer-point:last-child {
+    border-bottom: none;
+}

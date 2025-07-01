@@ -1,103 +1,207 @@
+"use client";
 import Image from "next/image";
+import NextGigBanner from "./components/NextGigBanner";
+import { useState, useEffect } from "react";
+import TiltableCard from "./components/TiltableCard";
+import BackToTopButton from "./components/BackToTopButton";
+import PagePreview from "./components/PagePreview";
+
+const pages = [
+  {
+    title: "Gigs",
+    description: "Hier finden Sie alle unsere kommenden Auftritte.",
+    imageUrl: "/gig-images/img-1.jpg",
+    linkUrl: "/gigs",
+  },
+  {
+    title: "Besetzung",
+    description: "Die Funky Marching Band von Funuralband bix XXL!",
+    imageUrl: "/gig-images/img-2.jpg",
+    linkUrl: "/cast",
+  },
+  {
+    title: "Bandleader",
+    description: "Über unseren Bandleader Jörgen Welander",
+    imageUrl: "/bandleader-img.jpg",
+    linkUrl: "/contact",
+  },
+  {
+    title: "Galerie",
+    description: "Bilder, Videos und Audios von der FMB in Action!",
+    imageUrl: "/gig-images/img-5.png",
+    linkUrl: "/impressum",
+  },
+  {
+    title: "Kontakt",
+    description: "Kontakt zur FMB und Proben",
+    imageUrl: "/gig-images/img-6.jpg",
+    linkUrl: "/contact",
+  },
+  {
+    title: "Impressum",
+    description: "Impressum und rechtliche Hinweise",
+    imageUrl: "/gig-images/img-7.jpg",
+    linkUrl: "/impressum",
+  },
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [rotate, setRotate] = useState({ x: 5, y: 5 });
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    const handleScroll = () => {
+      const bottom =
+        Math.ceil(window.innerHeight + window.scrollY) >=
+        document.documentElement.scrollHeight - 100;
+      setIsBannerVisible(!bottom);
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const rotateX = ((y - centerY) / centerY) * 3;
+    const rotateY = ((x - centerX) / centerX) * -3;
+
+    setRotate({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setRotate({ x: 5, y: 5 });
+  };
+
+  return (
+    <>
+      <div className="scroll-section section-1" id="section1">
+        {/* Content for the first full-screen page */}
+
+        <div className="blue-hue-circle"></div>
+
+        <h1>„Where ever you want some funk - we'll come and play!"</h1>
+        <Image
+          src="/gig-images/img-4.jpg"
+          alt="Gig Image 1"
+          width={1000}
+          height={1000}
+          quality={100} /* Set maximum quality */
+          style={{
+            transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        />
+
+        <NextGigBanner isVisible={isBannerVisible}></NextGigBanner>
+      </div>
+      <div className="scroll-section about-us-section" id="about-us">
+        <div
+          className="about-us-card"
+          style={{
+            transform: `perspective(1000px) rotateX(-3deg) rotateY(3deg)`,
+            transition: "transform 0.1s ease-out",
+          }}
+        >
+          <h2>Über uns</h2>
+          <p>
+            Ob auf der Strasse oder im Konzertsaal, die Funk-, Jazz-, Blues- und
+            Latinrhythmen der FUNKY MARCHING BAND poppen an den verschiedensten
+            Orten auf; ob im Jazzhaus, dem SC-Stadion, auf Festivals und selbst
+            vor dem Friedhof machen sie nicht halt, denn ihre Musik begleitet in
+            alter New-Orleans-Tradition die Menschen in wirklich allen
+            Lebenslagen. Jörgen Welander leitet die FUNKY MARCHING BAND, deren
+            rund 22 Mitglieder in den Jazz & Rock Schulen und der Musikschule
+            Freiburg zu Hause sind. Die Band tritt in kleiner,
+            „kammermusikalischer-Sousafunk-Besetzung“ aber auch in Großbesetzung
+            auf. Energiegeladene Musik - von der Softballade bis zur Powerrakete.
+            Die FUNKY MARCHING BAND greift den Stil von Brass Bands wie der
+            Dirty Dozen BB (USA), der Mardi Gras BB (Deutschland) oder von
+            FunkOff (Italy) auf. In traditioneller Besetzung (Sousaphone/Tuba,
+            Snare, Basedrum, Saxophones, Trombone, Trumpet, Guitar, Vocals) aber
+            dennoch in moderner Stilrichtung bietet die FUNKY MARCHING BAND einen
+            abwechslungsreichen Auftritt mit klassischen Sounds aus New Orleans
+            bis zu groovigem Funk.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
+          className="about-us-card"
+          style={{
+            transform: `perspective(1000px) rotateX(3deg) rotateY(-3deg)`,
+            transition: "transform 0.1s ease-out",
+          }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <h2>Geschichte</h2>
+          <p>
+            Marching Bands entstanden nach dem Ende des amerikanischen
+            Bürgerkriegs (1865), als Afroamerikaner bei Auflösung der Armee
+            günstig Instrumente kaufen konnten. Daraus entwickelte sich zunächst
+            der „archaische Jazz“, eine Vorform des klassischen Jazz.
+            Eine der frühen Gruppen warb mit: „Allen´s Brass Band – für alle
+            Anlässe: Beerdigungen, Picknicks und Paraden“. Musikalisch haben
+            sich die Street Bands in den Jahrzehnten vielfältig weiter
+            entwickelt,  aber es bleibt dabei, dass sie Musik für alle Anlässe
+            bieten.
+            Das Repertoire von Street Bands bestand zunächst aus Spirituals,
+            Blues, Songs, Ragtime, Marschmusik und Oldtime Jazz. Während der
+            1990er Jahre entwickelte sich ein alternativer „Sousaphunk“ - ein
+            funky Style. Sousaphone und Tuba spielen die Basslinie wie im Jazz,
+            R&B und im Funk. Auch die Schlagzeuger (Snare und Basstrommel) und
+            die Bläser lehnen sich an diesen Stil an.
+            Anders als Big Bands spielen die Marching Bands alles auswendig. So
+            lässt  sich spielend durch die Straßen und Feste ziehen. Bekannt sind
+            die Street Bands aus New Orleans wie die Dirty Dozen Brass Band
+            (Gründung 1979), aber auch europäische Gruppen wir die Mardi Gras
+            Brass Band aus Deutschland oder FunkOff aus Italien.
+          </p>
+        </div>
+      </div>
+      <div className="scroll-section newsletter" id="newsletter">
+        <div className="newsletter-bento-box">
+          <h1>Sie möchten kein wichtiges Konzert verpassen?</h1>
+          <p>Hier können Sie unseren Newsletter abonnieren</p>
+          <div className="newsletter-form">
+            <input type="email" placeholder="E-Mail Adresse" />
+            <button>Abonnieren</button>
+          </div>
+          <div className="blue-drop"></div>
+        </div>
+      </div>
+      <div className="scroll-section more-pages-section" id="more-pages">
+        <div className="preview-row">
+          {pages.map((page, index) => (
+            <PagePreview
+              key={index}
+              title={page.title}
+              description={page.description}
+              imageUrl={page.imageUrl}
+              linkUrl={page.linkUrl}
+            />
+          ))}
+          {pages.map((page, index) => (
+            <PagePreview
+              key={`duplicate-${index}`}
+              title={page.title}
+              description={page.description}
+              imageUrl={page.imageUrl}
+              linkUrl={page.linkUrl}
+            />
+          ))}
+        </div>
+      </div>
+      <BackToTopButton />
+    </>
   );
 }
