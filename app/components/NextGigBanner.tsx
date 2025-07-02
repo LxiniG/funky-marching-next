@@ -1,24 +1,23 @@
 "use client";
 import { NextPage } from "next";
 import Link from "next/link";
-import { LinkOutline } from "react-ionicons";
-import Button from "./Button";
 import { useEffect, useState } from "react";
+import styles from "./NextGigBanner.module.css";
 
 interface Props {
     isVisible: boolean;
 }
 
 const NextGigBanner: NextPage<Props> = ({ isVisible }) => {
-    const [show, setShow] = useState(isVisible);
+    const [show, setShow] = useState(false);
     const [animationClass, setAnimationClass] = useState("");
 
     useEffect(() => {
         if (isVisible) {
             setShow(true);
-            setAnimationClass("next-gig-box-animated-in");
+            setAnimationClass(styles.nextGigBoxAnimatedIn);
         } else {
-            setAnimationClass("next-gig-box-animated-out");
+            setAnimationClass(styles.nextGigBoxAnimatedOut);
             const timer = setTimeout(() => setShow(false), 500); // match animation duration
             return () => clearTimeout(timer);
         }
@@ -29,13 +28,13 @@ const NextGigBanner: NextPage<Props> = ({ isVisible }) => {
     }
 
     return (
-        <div className={`next-gig-box ${animationClass}`}>
+        <Link href="/gigs" className={`${styles.nextGigBox} ${animationClass}`}>
             <h2>24.06.25</h2>
-            <div className="next-gig-box-content">
-                <h3>Unser nächster Gig 📆</h3>
+            <div className={styles.nextGigBoxContent}>
+                <p>Unser nächster Gig:</p>
                 <p>FMB spielt beim Johannimarkt in Grenzach-Whylen</p>
             </div>
-        </div>
+        </Link>
     );
 };
 

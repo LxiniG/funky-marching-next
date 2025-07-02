@@ -23,7 +23,7 @@ const pages = [
     title: "Bandleader",
     description: "Über unseren Bandleader Jörgen Welander",
     imageUrl: "/bandleader-img.jpg",
-    linkUrl: "/contact",
+    linkUrl: "/bandleader",
   },
   {
     title: "Galerie",
@@ -87,7 +87,6 @@ export default function Home() {
   return (
     <>
       <div className="scroll-section section-1" id="section1">
-        {/* Content for the first full-screen page */}
 
         <div className="blue-hue-circle"></div>
 
@@ -97,7 +96,7 @@ export default function Home() {
           alt="Gig Image 1"
           width={1000}
           height={1000}
-          quality={100} /* Set maximum quality */
+          quality={100}
           style={{
             transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
           }}
@@ -170,7 +169,7 @@ export default function Home() {
       </div>
       <div className="scroll-section newsletter" id="newsletter">
         <div className="newsletter-bento-box">
-          <h1>Sie möchten kein wichtiges Konzert verpassen?</h1>
+          <h2>Sie möchten kein wichtiges Konzert verpassen?</h2>
           <p>Hier können Sie unseren Newsletter abonnieren</p>
           <div className="newsletter-form">
             <input type="email" placeholder="E-Mail Adresse" />
@@ -181,18 +180,9 @@ export default function Home() {
       </div>
       <div className="scroll-section more-pages-section" id="more-pages">
         <div className="preview-row">
-          {pages.map((page, index) => (
+          {[...pages, ...pages, ...pages].map((page, index) => (
             <PagePreview
               key={index}
-              title={page.title}
-              description={page.description}
-              imageUrl={page.imageUrl}
-              linkUrl={page.linkUrl}
-            />
-          ))}
-          {pages.map((page, index) => (
-            <PagePreview
-              key={`duplicate-${index}`}
               title={page.title}
               description={page.description}
               imageUrl={page.imageUrl}

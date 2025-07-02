@@ -107,7 +107,9 @@ h1 {
 h2 {
   font-size: var(--font-size-h2);
   font-weight: bold;
+  line-height: .95;
 }
+
 
 h3 {
   font-size: var(--font-size-h3);
@@ -182,30 +184,6 @@ button {
   background-color: transparent;
 }
 
-.next-gig-box-content {
-  gap: 0px;
-  display: flex;
-  flex-direction: column;
-}
-
-.next-gig-box {
-  position: fixed;
-  bottom: 20px;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(15px);
-  color: white;
-  border-radius: 25px;
-  padding: 20px 30px;
-  z-index: 80;
-  display: flex;
-  gap: 30px;
-  align-items: center;
-  flex-direction: row;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
 
 
 .link-container {
@@ -253,19 +231,14 @@ section,
 .blue-hue-circle {
   position: absolute;
   bottom: -150px;
-  /* Adjust to position the circle */
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
-  /* Adjust size */
   height: 100%;
-  /* Adjust size */
   background-color: rgba(81, 81, 251, 0.5);
   border-radius: 50%;
   z-index: -1;
-  /* Place it behind other content */
   filter: blur(150px);
-  /* Add a blur effect for soft edges */
 }
 
 .about-us-section {
@@ -342,10 +315,9 @@ section,
   color: white;
   text-align: center;
   overflow: hidden;
-  /* To contain the blue drop */
 }
 
-.newsletter-bento-box h1 {
+.newsletter-bento-box h2 {
   margin-bottom: .5rem;
 }
 
@@ -367,7 +339,6 @@ section,
   border: 1px solid rgba(255, 255, 255, 0.2);
   background-color: rgba(255, 255, 255, 0.05);
   color: white;
-  font-size: 1rem;
 }
 
 .newsletter-form input::placeholder {
@@ -380,7 +351,6 @@ section,
   border: none;
   background-color: #4f46e5;
   color: white;
-  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -407,40 +377,8 @@ section,
   }
 
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-33.333%);
   }
-}
-
-@keyframes slide-in {
-  from {
-    transform: translateY(100%) scale(0.9);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-out {
-  from {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-
-  to {
-    transform: translateY(100%) scale(0.9);
-    opacity: 0;
-  }
-}
-
-.next-gig-box-animated-in {
-  animation: slide-in 0.5s forwards;
-}
-
-.next-gig-box-animated-out {
-  animation: slide-out 0.5s forwards;
 }
 
 .more-pages-section {
@@ -479,18 +417,6 @@ section,
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.tab-bar-toggle {
-  display: none;
-  background: #222;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.5rem 1.2rem;
-  font-size: 1.2rem;
-  margin-top: 1rem;
-  cursor: pointer;
 }
 
 @media (max-width: 900px) {
