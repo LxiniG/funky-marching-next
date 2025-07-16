@@ -1,9 +1,8 @@
 "use client";
 import Image from "next/image";
-import NextGigBanner from "./components/NextGigBanner";
-import { useState, useEffect } from "react";
-import TiltableCard from "./components/TiltableCard";
+import { useEffect, useState } from "react";
 import BackToTopButton from "./components/BackToTopButton";
+import NextGigBanner from "./components/NextGigBanner";
 import PagePreview from "./components/PagePreview";
 
 const pages = [
@@ -90,7 +89,6 @@ export default function Home() {
 
         <div className="blue-hue-circle"></div>
 
-        <h1>„Where ever you want some funk - we'll come and play!"</h1>
         <Image
           src="/gig-images/img-4.jpg"
           alt="Gig Image 1"
@@ -103,6 +101,7 @@ export default function Home() {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         />
+        <h1>„Where ever you want some funk - we'll come and play!"</h1>
 
         <NextGigBanner isVisible={isBannerVisible}></NextGigBanner>
       </div>

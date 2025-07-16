@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google"; // We\'ll replace Inter with Bricolage Grotesque
 import localFont from "next/font/local";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import "./globals.css";
 
 // const inter = Inter({ subsets: ["latin"] }); // Remove or comment out Inter
@@ -47,17 +47,15 @@ export default function RootLayout({
         <header className="band-header">
           <Link href="/" style={{ display: 'inline-block' }}>
             <Image
-              src="/fmb-logo-light.png"
+              src="/logo-with-music-school.png"
               alt="FMB Band Logo"
-              width={300}
-              height={150}
-              style={{ objectFit: "contain", width: "min(60vw, 300px)", height: "auto", maxWidth: "100%", transition: "width 0.2s" }}
+              width={500}
+              height={250}
+              style={{ objectFit: "contain", width: "min(120vw, 800px)", height: "auto", maxWidth: "100%", transition: "width 0.2s" }}
               priority
             />
           </Link>
-          <p>
-            Musikschule Freiburg • Jazz- und Rockschulen Freiburg
-          </p>
+
           <nav className="tab-bar">
             <Link href="/gigs">Gigs</Link>
             <Link href="/cast">Besetzung</Link>
