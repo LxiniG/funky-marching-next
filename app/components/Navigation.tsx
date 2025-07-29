@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navigationLinks = [
+    { href: "/", label: "Über uns" },
     { href: "/gigs", label: "Gigs" },
     { href: "/cast", label: "Besetzung" },
     { href: "/band-leader", label: "Bandleader" },
     { href: "/gallery", label: "Galerie" },
     { href: "/contact", label: "Kontakt" },
     { href: "/impressum", label: "Impressum" },
+
 ];
 
 export default function Navigation() {

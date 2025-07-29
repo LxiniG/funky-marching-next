@@ -7,7 +7,7 @@
 .nextGigBox {
     position: fixed;
     bottom: 20px;
-    left: translateX(50%);
+    left: 50%;
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
@@ -44,24 +44,24 @@
 
 @keyframes slide-in {
     from {
-        transform: translateY(100%) scale(0.9);
+        transform: translateX(-50%) translateY(100%) scale(0.9);
         opacity: 0;
     }
 
     to {
-        transform: translateY(0) scale(1);
+        transform: translateX(-50%) translateY(0) scale(1);
         opacity: 1;
     }
 }
 
 @keyframes slide-out {
     from {
-        transform: translateY(0) scale(1);
+        transform: translateX(-50%) translateY(0) scale(1);
         opacity: 1;
     }
 
     to {
-        transform: translateY(100%) scale(0.9);
+        transform: translateX(-50%) translateY(100%) scale(0.9);
         opacity: 0;
     }
 }

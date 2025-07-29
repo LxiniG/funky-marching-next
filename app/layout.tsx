@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Image from "next/image";
 import Link from "next/link";
+import Navigation from "./components/Navigation";
 import "./globals.css";
 
 // const inter = Inter({ subsets: ["latin"] }); // Remove or comment out Inter
@@ -56,14 +57,7 @@ export default function RootLayout({
             />
           </Link>
 
-          <nav className="tab-bar">
-            <Link href="/gigs">Gigs</Link>
-            <Link href="/cast">Besetzung</Link>
-            <Link href="/band-leader">Bandleader</Link>
-            <Link href="/gallery">Galerie</Link>
-            <Link href="/contact">Kontakt</Link>
-            <Link href="/impressum">Impressum</Link>
-          </nav>
+          <Navigation></Navigation>
         </header>
         <main>
           {children}

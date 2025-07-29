@@ -1,4 +1,5 @@
 "use client";
+import { Gig } from "@/types";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -6,9 +7,10 @@ import styles from "./NextGigBanner.module.css";
 
 interface Props {
     isVisible: boolean;
+    gig?: Gig;
 }
 
-const NextGigBanner: NextPage<Props> = ({ isVisible }) => {
+const NextGigBanner: NextPage<Props> = ({ isVisible, gig }) => {
     const [show, setShow] = useState(false);
     const [animationClass, setAnimationClass] = useState("");
 
@@ -23,16 +25,22 @@ const NextGigBanner: NextPage<Props> = ({ isVisible }) => {
         }
     }, [isVisible]);
 
-    if (!show) {
+    if (!show || !gig) {
         return null;
     }
 
+    const formattedDate = gig.gigStartDate.toLocaleDateString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+    });
+
     return (
         <Link href="/gigs" className={`${styles.nextGigBox} ${animationClass}`}>
-            <h2>24.06.25</h2>
+            <h2>{formattedDate}</h2>
             <div className={styles.nextGigBoxContent}>
                 <p>Unser nächster Gig:</p>
-                <p>FMB spielt beim Johannimarkt in Grenzach-Whylen</p>
+                <p>{gig.gigTitle || 'Auftritt'}</p>
             </div>
         </Link>
     );
