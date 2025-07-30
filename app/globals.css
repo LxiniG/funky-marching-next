@@ -438,32 +438,9 @@ section,
   gap: 1rem;
 }
 
-.newsletter-form input {
-  width: 60%;
-  padding: 0.8rem;
-  border-radius: 10px;
-  border: 1px solid hsl(var(--border));
-  background-color: hsl(var(--input));
-  color: hsl(var(--foreground));
-}
 
-.newsletter-form input::placeholder {
-  color: hsl(var(--muted-foreground));
-}
 
-.newsletter-form button {
-  padding: 0.8rem 1.5rem;
-  border-radius: 10px;
-  border: none;
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
 
-.newsletter-form button:hover {
-  background-color: hsl(var(--primary) / 0.9);
-}
 
 .blue-drop {
   position: absolute;
