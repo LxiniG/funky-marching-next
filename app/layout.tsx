@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google"; // We\'ll replace Inter with Bricolage Grotesque
 import localFont from "next/font/local";
-import Image from "next/image";
-import Link from "next/link";
+import { ThemeLogo } from "../components/theme-logo";
+import { ThemeProvider } from "../components/theme-provider";
+import { ThemeToggle } from "../components/theme-toggle";
 import Navigation from "./components/Navigation";
 import "./globals.css";
 
@@ -43,28 +44,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de">
+    <html lang="de" suppressHydrationWarning>
       <body className={`${bricolage.className} ${bricolage.variable}`}> {/* Apply the font class and variable */}
-        <header className="band-header">
-          <Link href="/" style={{ display: 'inline-block' }}>
-            <Image
-              src="/logo-with-music-school.png"
-              alt="FMB Band Logo"
-              width={500}
-              height={250}
-              style={{ objectFit: "contain", width: "min(120vw, 800px)", height: "auto", maxWidth: "100%", transition: "width 0.2s" }}
-              priority
-            />
-          </Link>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <header className="band-header">
+            <div className="header-top">
+              <ThemeLogo />
+              <ThemeToggle />
+            </div>
 
-          <Navigation></Navigation>
-        </header>
-        <main>
-          {children}
-        </main>
-        <footer className="footer">
-          <p>© 2025 Funky Marching Band | Made with ❤️ by Linus</p>
-        </footer>
+            <Navigation></Navigation>
+          </header>
+          <main>
+            {children}
+          </main>
+          <footer className="footer">
+            <p>© 2025 Funky Marching Band | Made with ❤️ by Linus</p>
+          </footer>
+        </ThemeProvider>
       </body>
 
     </html >

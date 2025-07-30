@@ -1,26 +1,23 @@
 export interface StrapiImage {
-    data: {
-        id: number;
-        attributes: {
-            url: string;
-            alternativeText: string | null;
-            caption: string | null;
-            width: number;
-            height: number;
-            formats?: {
-                thumbnail?: { url: string; width: number; height: number; };
-                small?: { url: string; width: number; height: number; };
-                medium?: { url: string; width: number; height: number; };
-                large?: { url: string; width: number; height: number; };
-            };
-            hash: string;
-            ext: string;
-            mime: string;
-            size: number;
-            createdAt: string;
-            updatedAt: string;
-        };
-    } | null;
+    id: number;
+    url: string;
+    alternativeText: string | null;
+    caption: string | null;
+    width: number;
+    height: number;
+    formats?: {
+        thumbnail?: { url: string; width: number; height: number; };
+        small?: { url: string; width: number; height: number; };
+        medium?: { url: string; width: number; height: number; };
+        large?: { url: string; width: number; height: number; };
+    };
+    hash: string;
+    ext: string;
+    mime: string;
+    size: number;
+    createdAt: string;
+    updatedAt: string;
+
 }
 
 export interface StrapiGigResponse {

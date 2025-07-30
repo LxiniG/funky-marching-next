@@ -1,4 +1,6 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
 import Image from "next/image";
@@ -55,7 +57,6 @@ interface StrapiAboutUsPageResponse {
     aboutUsHistory: string;
     titlePhoto: StrapiImage;
   };
-
 }
 
 interface AboutUsPageData {
@@ -104,6 +105,20 @@ async function getAboutUsData(): Promise<StrapiAboutUsPageResponse> {
   return data;
 }
 
+// Utility function to get full image URL
+function getImageUrl(image: StrapiImage): string {
+  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
+  const imageUrl = image.url;
+
+  // If the URL is already absolute, return as is
+  if (imageUrl.startsWith('http')) {
+    return imageUrl;
+  }
+
+  // Otherwise, prepend the base URL
+  return `${baseUrl}${imageUrl}`;
+}
+
 export default function Home() {
   const [rotate, setRotate] = useState({ x: 5, y: 5 });
   const [isBannerVisible, setIsBannerVisible] = useState(true);
@@ -128,7 +143,7 @@ export default function Home() {
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
           aboutUsHistory: strapiData.data.aboutUsHistory,
-          titlePhoto: strapiData.data.titlePhoto,
+          titlePhoto: strapiData.data.titlePhoto
         };
         console.log('🚀 Mapped about us data:', mappedData);
         setAboutUsData(mappedData);
@@ -136,7 +151,7 @@ export default function Home() {
         console.error("❌ Error fetching about us data:", error);
         setIsAboutUsError("Failed to load about us data");
       } finally {
-        setIsAboutUsLoading(true);
+        setIsAboutUsLoading(false);
       }
     };
 
@@ -226,42 +241,12 @@ export default function Home() {
           <div className="blue-hue-circle"></div>
           <div className="flex flex-col items-center space-y-8 p-8">
             {/* Image skeleton */}
-            <Skeleton className="h-[500px] w-[500px] rounded-xl" />
+            <Skeleton className="h-[300px] w-[min(90vw,800px)] md:h-[500px] rounded-[50px]" />
             {/* Title skeleton */}
-            <Skeleton className="h-12 w-[600px]" />
-          </div>
-          {/* About us section skeleton */}
-          <div className="scroll-section about-us-section">
-            <div className="flex gap-8 p-8">
-              {/* About us card 1 skeleton */}
-              <div className="flex-1 space-y-4 p-6">
-                <Skeleton className="h-8 w-32" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-              </div>
-              {/* About us card 2 skeleton */}
-              <div className="flex-1 space-y-4 p-6">
-                <Skeleton className="h-8 w-32" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
-              </div>
-            </div>
+            <Skeleton className="h-12 w-[min(90vw,600px)]" />
           </div>
         </div>
+
       )}
 
       {/* Show error state for about us */}
@@ -278,13 +263,17 @@ export default function Home() {
           <div className="scroll-section section-1" id="section1">
             <div className="blue-hue-circle"></div>
             <Image
-              src="/gig-images/img-4.jpg"
-              alt="Gig Image 1"
-              width={1000}
-              height={1000}
+              src={getImageUrl(aboutUsData.titlePhoto)}
+              alt={aboutUsData.titlePhoto.alternativeText || "Landing Page Image"}
+              width={aboutUsData.titlePhoto.width}
+              height={aboutUsData.titlePhoto.height}
               quality={100}
               style={{
                 transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+                maxWidth: "min(90vw, 800px)",
+                height: "auto",
+                borderRadius: "50px",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
               }}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
@@ -322,8 +311,8 @@ export default function Home() {
               <h2>Sie möchten kein wichtiges Konzert verpassen?</h2>
               <p>Hier können Sie unseren Newsletter abonnieren</p>
               <div className="newsletter-form">
-                <input type="email" placeholder="E-Mail Adresse" />
-                <button>Abonnieren</button>
+                <Input type="Email" placeholder="Email hier eingeben"></Input>
+                <Button>Abonnieren</Button>
               </div>
               <div className="blue-drop"></div>
             </div>
