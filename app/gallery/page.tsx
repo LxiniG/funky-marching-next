@@ -1,164 +1,279 @@
 "use client";
-import { useState } from "react";
-import styles from "./Gallery.module.css";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { StrapiImage } from "@/types/strapi";
+import { Download, Image as ImageIcon, Music, RefreshCw, Video, X } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import styles from "./Gallery.module.css";
 
-const photoList = [
-    {
-        src: "/fmb-gallery/PHOTO-2023-07-02-00-06-04.jpg",
-        title: "FMB Opening Night",
-        description: "Die Band startet die Saison mit einem energiegeladenen Auftritt."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2023-07-02-22-36-17.jpg",
-        title: "Sommerkonzert",
-        description: "Ein sonniger Tag voller Musik und guter Laune."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2023-07-02-22-36-19.jpg",
-        title: "Publikum begeistert",
-        description: "Das Publikum feiert die FMB beim Stadtfest."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2023-07-13-08-53-25.jpg",
-        title: "Marching Groove",
-        description: "Die Band marschiert durch die Straßen von Freiburg."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2023-09-24-14-13-31.jpg",
-        title: "Open Air Bühne",
-        description: "FMB auf der großen Open-Air-Bühne."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-06-22-07-06-42.jpg",
-        title: "Frühsommer Gig",
-        description: "Ein Auftritt am frühen Morgen im Juni."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-06-30-21-59-49.jpg",
-        title: "Abendstimmung",
-        description: "Die Band spielt in den Sonnenuntergang."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-07-20-10-00-28.jpg",
-        title: "Festival-Highlight",
-        description: "FMB als Headliner beim Sommerfestival."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-10-13-21-57-30.jpg",
-        title: "Herbstkonzert",
-        description: "Ein stimmungsvoller Auftritt im Oktober."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-10-13-21-57-31.jpg",
-        title: "Band im Fokus",
-        description: "Ein besonderer Moment auf der Bühne."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2024-12-19-20-15-25.jpg",
-        title: "Wintergig",
-        description: "FMB bringt Schwung in die kalte Jahreszeit."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2025-01-11-10-26-56.jpg",
-        title: "Neujahrskonzert",
-        description: "Das Jahr beginnt mit Musik und Freude."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2025-05-07-19-40-26.jpg",
-        title: "Mai-Session",
-        description: "Ein spontaner Auftritt im Mai."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2025-05-24-18-18-13.jpg",
-        title: "Open Stage",
-        description: "FMB lädt zum Mitmachen ein."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2025-05-24-18-18-13 2.jpg",
-        title: "Publikumsliebling",
-        description: "Die Band begeistert Jung und Alt."
-    },
-    {
-        src: "/fmb-gallery/PHOTO-2025-05-24-18-18-13 3.jpg",
-        title: "Finale",
-        description: "Der letzte Song des Abends."
-    },
-];
+interface StrapiGalleryImage {
+    id: number;
+    imageDescription: string;
+    imageDate: Date;
+    imageTitle: string;
+    image: StrapiImage;
+}
 
-export default function GalleryPage() {
-    const [mode, setMode] = useState<'photos' | 'videos'>("photos");
-    const [selected, setSelected] = useState(0);
+function getImageUrl(image: StrapiImage): string {
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
+    return image.url.startsWith('http') ? image.url : `${baseUrl}${image.url}`;
+}
+
+async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
+    const response = await fetch(`${baseUrl}/api/gallery-images?populate=*`);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch gallery items from Strapi");
+    }
+    const data = await response.json();
+    console.log("🚀 ~ fetchGalleryImages ~ response:", data)
+    return data["data"];
+}
+
+
+
+export default function Gallery() {
+    const [selectedImage, setSelectedImage] = useState<number | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [galleryImages, setGalleryImages] = useState<StrapiGalleryImage[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const loadgalleryImages = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await fetchGalleryImages();
+                setGalleryImages(response);
+            } catch (err) {
+                console.error('Error fetching gallery items:', err);
+                setError('Failed to load gallery items');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadgalleryImages();
+    }, []);
+
+    // Refresh gallery data
+    const refreshGallery = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await fetchGalleryImages();
+            setGalleryImages(response);
+        } catch (err) {
+            console.error('Error refreshing gallery:', err);
+            setError('Failed to refresh gallery items');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleImageClick = (index: number) => {
+        setSelectedImage(index);
+        setIsDialogOpen(true);
+    };
+
+    const handleDownload = (item: StrapiGalleryImage) => {
+        const imageUrl = getImageUrl(item.image);
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <h1>Galerie</h1>
+                <p className={styles.description}>
+                    Bilder, Audios und Videos von unseren Gigs und Aufnahmen.                </p>
+
+                <Tabs defaultValue="images" className={styles.tabsContainer}>
+                    <TabsList className={styles.tabsList}>
+                        <TabsTrigger value="images" className={styles.tabsTrigger}>
+                            <ImageIcon className="w-4 h-4 mr-2" />
+                            Bilder
+                        </TabsTrigger>
+                        <TabsTrigger value="videos" className={styles.tabsTrigger}>
+                            <Video className="w-4 h-4 mr-2" />
+                            Videos
+                        </TabsTrigger>
+                        <TabsTrigger value="audio" className={styles.tabsTrigger}>
+                            <Music className="w-4 h-4 mr-2" />
+                            Audio
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="images" className={styles.tabContent}>
+                        <div className={styles.imageGrid}>
+                            {Array.from({ length: 12 }).map((_, index) => {
+                                const heights = ['h-48', 'h-56', 'h-40', 'h-64', 'h-44', 'h-52'];
+                                const randomHeight = heights[index % heights.length];
+
+                                return (
+                                    <div key={index} className={styles.skeletonCard}>
+                                        <Skeleton className={`w-full ${randomHeight} rounded-xl`} />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="videos" className={styles.tabContent}>
+                        <div className={styles.comingSoon}>
+                            <Video className="w-12 h-12 mb-4 text-muted-foreground" />
+                            <h2>Videos coming soon!</h2>
+                            <p>Wir arbeiten daran, euch bald unsere besten Video-Momente zu zeigen.</p>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="audio" className={styles.tabContent}>
+                        <div className={styles.comingSoon}>
+                            <Music className="w-12 h-12 mb-4 text-muted-foreground" />
+                            <h2>Audio coming soon!</h2>
+                            <p>Bald könnt ihr hier unsere Musik hören und downloaden.</p>
+                        </div>
+                    </TabsContent>
+                </Tabs>
+            </div>
+        );
+    }
 
     return (
-        <div className={styles.galleryPage}>
-            <div
-                className={styles.bgBlur}
-                style={{
-                    backgroundImage: `url(${photoList[selected].src})`,
-                }}
-                aria-hidden="true"
-            />
-            <div className={
-                mode === "videos"
-                    ? styles.sliderBox + " " + styles.videos
-                    : styles.sliderBox
-            }>
-                <button
-                    className={mode === "photos" ? styles.active : ""}
-                    onClick={() => setMode("photos")}
-                >
-                    Fotos
-                </button>
-                <button
-                    className={mode === "videos" ? styles.active : ""}
-                    onClick={() => setMode("videos")}
-                >
-                    Videos
-                </button>
-            </div>
-            {mode === "photos" && (
-                <div className={styles.galleryContent}>
-                    <div className={styles.bigImageBox}>
-                        <Image
-                            src={photoList[selected].src}
-                            alt={photoList[selected].title}
-                            width={600}
-                            height={400}
-                            className={styles.bigImage}
-                            priority
-                        />
-                        <div className={styles.imageTextBox}>
-                            <h2 className={styles.imageTitle}>{photoList[selected].title}</h2>
-                            <p className={styles.imageDesc}>{photoList[selected].description}</p>
-                        </div>
-                    </div>
-                    <div className={styles.previewList}>
-                        {photoList.map((img, i) => (
+        <div className={styles.container}>
+            <h1>Galerie</h1>
+            <p className={styles.description}>
+                Bilder, Audios und Videos von unseren Gigs und Aufnahmen.
+            </p>
+
+            {error && (
+                <div style={{ color: 'var(--destructive)', textAlign: 'center', marginBottom: '2rem' }}>
+                    <p>⚠️ {error}</p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)' }}>
+                        Failed to load images from Strapi.
+                    </p>
+                    <Button
+                        onClick={refreshGallery}
+                        variant="outline"
+                        size="sm"
+                        disabled={loading}
+                        style={{ marginTop: '1rem' }}
+                    >
+                        <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                        Retry Loading
+                    </Button>
+                </div>
+            )}
+
+            <Tabs defaultValue="images" className={styles.tabsContainer}>
+                <TabsList className={styles.tabsList}>
+                    <TabsTrigger value="images" className={styles.tabsTrigger}>
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Bilder ({galleryImages.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="videos" className={styles.tabsTrigger}>
+                        <Video className="w-4 h-4 mr-2" />
+                        Videos (0)
+                    </TabsTrigger>
+                    <TabsTrigger value="audio" className={styles.tabsTrigger}>
+                        <Music className="w-4 h-4 mr-2" />
+                        Audio (0)
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="images" className={styles.tabContent}>
+                    <div className={styles.imageGrid}>
+                        {galleryImages.map((item, index) => (
                             <div
-                                key={img.src}
-                                className={
-                                    i === selected
-                                        ? styles.preview + " " + styles.selected
-                                        : styles.preview
-                                }
-                                onClick={() => setSelected(i)}
+                                key={item.id}
+                                className={styles.imageCard}
+                                onClick={() => handleImageClick(index)}
                             >
                                 <Image
-                                    src={img.src}
-                                    alt={`Preview ${i + 1}`}
-                                    width={90}
-                                    height={60}
-                                    className={styles.previewImg}
+                                    src={getImageUrl(item.image)}
+                                    alt={item.imageTitle}
+                                    width={300}
+                                    height={200}
+                                    className={styles.previewImage}
+                                    style={{ objectFit: 'cover' }}
                                 />
+                                <div className={styles.imageOverlay}>
+                                    <h3 className={styles.imageCardTitle}>{item.imageTitle}</h3>
+                                </div>
                             </div>
                         ))}
                     </div>
-                </div>
-            )}
-            {mode === "videos" && (
-                <div className={styles.comingSoon}>Videos coming soon!</div>
-            )}
+                </TabsContent>
+
+                <TabsContent value="videos" className={styles.tabContent}>
+                    <div className={styles.comingSoon}>
+                        <Video className="w-12 h-12 mb-4 text-muted-foreground" />
+                        <h2>Videos coming soon!</h2>
+                        <p>Wir arbeiten daran, euch bald unsere besten Video-Momente zu zeigen.</p>
+                    </div>
+
+                </TabsContent>
+
+                <TabsContent value="audio" className={styles.tabContent}>
+                    <div className={styles.comingSoon}>
+                        <Music className="w-12 h-12 mb-4 text-muted-foreground" />
+                        <h2>Audio coming soon!</h2>
+                        <p>Bald könnt ihr hier unsere Musik hören und downloaden.</p>
+                    </div>
+
+                </TabsContent>
+            </Tabs>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className={styles.dialogContent}>
+                    {selectedImage !== null && galleryImages[selectedImage] && (
+                        <>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className={styles.closeButton}
+                                onClick={() => setIsDialogOpen(false)}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+
+                            <div className={styles.fullImageContainer}>
+                                <Image
+                                    src={getImageUrl(galleryImages[selectedImage].image)}
+                                    alt={galleryImages[selectedImage].imageTitle}
+                                    width={galleryImages[selectedImage].image.width}
+                                    height={galleryImages[selectedImage].image.height}
+
+                                />
+                            </div>
+
+                            <div className={styles.imageInfo}>
+                                <h2 className={styles.fullImageTitle}>
+                                    {galleryImages[selectedImage].imageTitle}
+                                </h2>
+                                <p className={styles.fullImageDescription}>
+                                    {galleryImages[selectedImage].imageDescription}
+                                </p>
+                                <Button
+                                    onClick={() => handleDownload(galleryImages[selectedImage])}
+                                    className={styles.downloadButton}
+                                >
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Bild herunterladen
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

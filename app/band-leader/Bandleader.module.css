@@ -1,123 +1,340 @@
-.bandleaderContainer {
-    display: flex;
-    width: 100%;
+/* Bento Box Layout */
+.bentoContainer {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(6, minmax(150px, auto));
+    gap: 1.5rem;
+    padding: 2rem;
     min-height: 100vh;
-    align-items: center;
+    background: var(--background);
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
 }
 
-.imageSection {
-    flex: 1;
-    display: flex;
+/* Background Images with Stacked Effect */
+.imageBackground {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.imageStack {
+    position: relative;
+    width: 320px;
+    height: 400px;
+}
+
+.stackedImage {
+    position: absolute;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    width: 280px;
+    height: 350px;
 }
 
 .bandleaderImg {
     width: 100%;
-    height: auto;
-    max-height: 1200px;
-    object-fit: cover;
+    height: 100%;
+    border-radius: 12px;
 }
 
-.textSection {
+/* First Image - Main/Top Image */
+.image1 {
+    top: 0;
+    left: 0;
+    z-index: 3;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: rotate(-2deg);
+}
+
+/* Second Image - Behind and to the right */
+.image2 {
+    top: 20px;
+    left: 30px;
+    z-index: 2;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: rotate(3deg);
+    opacity: 0.8;
+}
+
+/* Third Image - Behind and to the left */
+.image3 {
+    top: 40px;
+    left: -20px;
+    z-index: 1;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    transform: rotate(-5deg);
+    opacity: 0.6;
+}
+
+/* Base Bento Box Style */
+.bentoBox {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.bentoBox:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: var(--ring);
+}
+
+/* Box Title Styling */
+.boxTitle {
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+/* Image Box with Carousel */
+.imageBox {
+    grid-column: 1 / 6;
+    grid-row: 1 / 4;
+    justify-content: center;
+}
+
+.carousel {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.textContent {
-    text-align: left;
-    width: 80%;
-    color: white;
+.carouselImageWrapper {
+    aspect-ratio: 3/4;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.textContent h1 {
-    margin-bottom: 2rem;
-    color: white;
+.carouselImage {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.carouselButton {
+    background: var(--background);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.carouselButton:hover {
+    background: var(--muted);
+    border-color: var(--ring);
+}
+
+/* Biography Text Box */
+.textBox {
+    grid-column: 6 / 13;
+    grid-row: 1 / 3;
+}
+
+/* Career Highlights Box */
+.highlightsBox {
+    grid-column: 6 / 13;
+    grid-row: 3 / 5;
+}
+
+/* FMB Foundation Box */
+.fmbBox {
+    grid-column: 1 / 8;
+    grid-row: 4 / 6;
+}
+
+/* Website Link Box */
+.linkBox {
+    grid-column: 8 / 13;
+    grid-row: 4 / 6;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* Text Content Styling */
+.textContent {
+    color: var(--foreground);
+    line-height: 1.6;
+    flex: 1;
+}
+
+.textContent p {
+    margin-bottom: 1rem;
+    color: var(--muted-foreground);
+}
+
+.textContent p:last-child {
+    margin-bottom: 0;
 }
 
 .websiteLink {
-    font-weight: bold;
     display: flex;
-    justify-content: flex-start;
-    margin-top: 2rem;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
 }
 
 .websiteLinkText {
-    display: inline-flex;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    color: white;
+    gap: 0.75rem;
+    color: var(--foreground);
     text-decoration: none;
-    position: relative;
-    transition: color 0.3s ease;
-}
-
-.websiteLinkText::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: white;
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--muted);
 }
 
 .websiteLinkText:hover {
-    color: white;
-}
-
-.websiteLinkText:hover::after {
-    width: 100%;
+    background: var(--accent);
+    border-color: var(--ring);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .globeIcon {
-    width: 20px;
-    height: 20px;
-    filter: brightness(0) invert(1);
-    transition: transform 0.3s ease;
+    width: 24px;
+    height: 24px;
+    color: var(--muted-foreground);
+    transition: all 0.3s ease;
 }
 
 .websiteLinkText:hover .globeIcon {
+    color: var(--foreground);
     transform: scale(1.1);
 }
 
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .bentoContainer {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, minmax(120px, auto));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .imageBox {
+        grid-column: 1 / 5;
+        grid-row: 1 / 4;
+    }
+
+    .textBox {
+        grid-column: 5 / 9;
+        grid-row: 1 / 3;
+    }
+
+    .highlightsBox {
+        grid-column: 5 / 9;
+        grid-row: 3 / 5;
+    }
+
+    .fmbBox {
+        grid-column: 1 / 6;
+        grid-row: 4 / 6;
+    }
+
+    .linkBox {
+        grid-column: 6 / 9;
+        grid-row: 4 / 6;
+    }
+}
+
 @media (max-width: 768px) {
-    .bandleaderContainer {
-        flex-direction: column;
-        min-height: auto;
-    }
-
-    .imageSection {
+    .bentoContainer {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(5, minmax(200px, auto));
+        gap: 1rem;
         padding: 1rem;
     }
 
-    .textSection {
-        padding: 1rem;
-        padding-left: 1rem;
+    .imageBox,
+    .textBox,
+    .highlightsBox,
+    .fmbBox,
+    .linkBox {
+        grid-column: 1 / 2;
     }
 
-    .textContent {
-        text-align: center;
+    .imageBox {
+        grid-row: 1 / 2;
+        min-height: 400px;
     }
 
-    .textContent h1 {
-        margin-bottom: 1.5rem;
+    .textBox {
+        grid-row: 2 / 3;
     }
 
-    .websiteLink {
-        justify-content: center;
+    .highlightsBox {
+        grid-row: 3 / 4;
     }
 
-    .bandleaderImg {
-        max-width: 350px;
+    .fmbBox {
+        grid-row: 4 / 5;
+    }
+
+    .linkBox {
+        grid-row: 5 / 6;
+        min-height: 150px;
+    }
+
+    .bentoBox {
+        padding: 1.25rem;
+    }
+
+    .boxTitle {
+        font-size: 1.1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .bandleaderImg {
-        max-width: 280px;
+    .bentoContainer {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .bentoBox {
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .boxTitle {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .websiteLinkText {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+
+    .globeIcon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .carouselImageWrapper {
+        aspect-ratio: 4/5;
     }
 }

@@ -11,23 +11,26 @@ const navigationLinks = [
     { href: "/gallery", label: "Galerie" },
     { href: "/contact", label: "Kontakt" },
     { href: "/impressum", label: "Impressum" },
-
 ];
 
 export default function Navigation() {
     const pathname = usePathname();
 
     return (
-        <nav className="tab-bar">
-            {navigationLinks.map((link) => (
-                <Link
-                    key={link.href}
-                    href={link.href}
-                    className={pathname === link.href ? "active" : ""}
-                >
-                    {link.label}
-                </Link>
-            ))}
+
+        <nav className="nav-container">
+            {navigationLinks.map((link) => {
+                return (
+                    <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`nav-item ${pathname === link.href ? "active" : ""}`}
+                    >
+                        <span className="nav-text">{link.label}</span>
+                    </Link>
+                );
+            })}
         </nav>
+
     );
 }

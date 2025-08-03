@@ -1,6 +1,6 @@
 .container {
-    --gig-bg: #0e0e0e;
-    --gig-border: #333;
+    --gig-bg: var(--card);
+    --gig-border: var(--border);
     width: 90%;
     max-width: 1200px;
     margin: 60px auto;
@@ -18,7 +18,10 @@
     height: 40vh;
     pointer-events: none;
     z-index: -1;
-    background: radial-gradient(ellipse at center bottom, rgba(229, 70, 70, 0.25) 0%, rgba(229, 70, 70, 0.10) 60%, transparent 100%);
+    background: radial-gradient(ellipse at center bottom,
+            var(--red) 0%,
+            transparent 60%);
+    opacity: 0.25;
 }
 
 .timeline {
@@ -34,7 +37,7 @@
     left: 35px;
     bottom: 0;
     width: 3px;
-    background-color: #292929;
+    background-color: var(--muted);
     z-index: 0;
     transition: left 0.3s;
 }
@@ -65,13 +68,13 @@
     background-color: var(--gig-bg);
     border-radius: 15px;
     border: 1px solid var(--gig-border);
-    color: white;
+    color: var(--white);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    box-shadow: 0 0 10px 4px #171717;
+    box-shadow: 0 0 10px 4px var(--background);
 }
 
 .timeline-date-box .month {
@@ -117,9 +120,9 @@
 }
 
 .timeline-float-box {
-    background: white;
+    background: var(--popover);
     border-radius: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 32px oklch(from var(--ring) l c h / 0.12);
     padding: 0.5rem 1rem;
     align-items: center;
     justify-content: center;
@@ -144,20 +147,20 @@
 
 .timeline-date {
     font-weight: bold;
-    color: #a5b4fc;
+    color: var(--blue);
 }
 
 .current-date-marker .timeline-date-box {
-    border-color: #e54646;
-    background-color: rgb(46, 11, 11);
+    border-color: var(--red);
+    background-color: var(--destructive);
 }
 
 .current-date-marker .timeline-date {
-    color: #e54646;
+    color: var(--red);
 }
 
 .timeline-tickets-link {
-    color: black;
+    color: var(--popover-foreground);
     z-index: 3;
     position: relative;
 }

@@ -2,9 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Toaster } from "@/components/ui/sonner";
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import BackToTopButton from "./components/BackToTopButton";
 import NextGigBanner from "./components/NextGigBanner";
 import PagePreview from "./components/PagePreview";
@@ -129,6 +131,11 @@ export default function Home() {
   const [isAboutUsLoading, setIsAboutUsLoading] = useState(true);
   const [aboutUsError, setIsAboutUsError] = useState<string | null>(null);
 
+  // Newsletter form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+
   useEffect(() => {
     console.log('🚀 AboutUs useEffect triggered');
     const fetchAboutUsData = async () => {
@@ -225,6 +232,32 @@ export default function Home() {
     setRotate({ x: 5, y: 5 });
   };
 
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
+      toast.error("Bitte fülle alle Felder aus.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Bitte gib eine gültige E-Mail-Adresse ein.");
+      return;
+    }
+
+    console.log('Newsletter subscription:', { firstName, lastName, email });
+
+    toast.success(`Boom, ${firstName}! Du hast dich erfolgreich für unseren Newsletter angemeldet.`, {
+      description: "Die Bestätigungsmail ist unterwegs.",
+      duration: 5000,
+    });
+
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+  };
+
   return (
     <>
       {/* Always show the gig banner if data is available */}
@@ -310,10 +343,29 @@ export default function Home() {
             <div className="newsletter-bento-box">
               <h2>Sie möchten kein wichtiges Konzert verpassen?</h2>
               <p>Hier können Sie unseren Newsletter abonnieren</p>
-              <div className="newsletter-form">
-                <Input type="Email" placeholder="Email hier eingeben"></Input>
-                <Button>Abonnieren</Button>
-              </div>
+              <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
+                <div className="newsletter-name-fields">
+                  <Input
+                    type="text"
+                    placeholder="Vorname"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Nachname"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                </div>
+                <Input
+                  type="email"
+                  placeholder="Email hier eingeben"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button type="submit" className="mt-5">Abonnieren</Button>
+              </form>
               <div className="blue-drop"></div>
             </div>
           </div>
@@ -336,6 +388,7 @@ export default function Home() {
 
       )}
 
+      <Toaster />
     </>
   );
 }

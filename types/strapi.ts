@@ -20,6 +20,7 @@ export interface StrapiImage {
 
 }
 
+
 export interface StrapiGigResponse {
     data: Array<{
         id: number;
