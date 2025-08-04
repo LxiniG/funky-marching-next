@@ -1,0 +1,130 @@
+.loadingContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.topBox {
+    position: absolute;
+    top: -20vh;
+    left: -10vw;
+    width: 120vw;
+    height: 70vh;
+    background: rgba(0, 0, 0, 0.98);
+    transform-origin: center center;
+    transform: rotate(-3deg);
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 9998;
+}
+
+.bottomBox {
+    position: absolute;
+    bottom: -20vh;
+    left: -10vw;
+    width: 120vw;
+    height: 70vh;
+    background: rgba(0, 0, 0, 0.98);
+    transform-origin: center center;
+    transform: rotate(-3deg);
+    transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 9998;
+}
+
+.animateTop {
+    transform: translateY(-130vh) rotate(-5deg);
+}
+
+.animateBottom {
+    transform: translateY(130vh) rotate(-5deg);
+}
+
+.circleContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+}
+
+.circle {
+    width: 140px;
+    height: 140px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+    position: relative;
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.imageRow {
+    display: flex;
+    align-items: center;
+    animation: slideImages 3s linear infinite;
+    width: max-content;
+}
+
+.mannequinImage {
+    margin: 0 5px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+@keyframes slideImages {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 20px 50px rgba(255, 255, 255, 0.6);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .mannequinImage {
+        width: 40px;
+        height: 55px;
+        margin: 0 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .mannequinImage {
+        width: 30px;
+        height: 40px;
+        margin: 0 2px;
+    }
+}

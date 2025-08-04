@@ -32,6 +32,7 @@
 }
 
 .disclaimer-point {
+    color: rgba(255, 255, 255, 0.718);
     padding: 1rem;
     margin-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);

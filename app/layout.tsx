@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google"; // We\'ll replace Inter with Bricolage Grotesque
+import { ThemeLogo } from "@/components/theme-logo";
 import localFont from "next/font/local";
-import { ThemeLogo } from "../components/theme-logo";
 import { ThemeProvider } from "../components/theme-provider";
-import { ThemeToggle } from "../components/theme-toggle";
 import Navigation from "./components/Navigation";
 import "./globals.css";
 
@@ -53,9 +52,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header className="band-header">
+            {/* Uncomment if you want to show the theme switch on the top right. */}
             <div className="header-top">
               <ThemeLogo />
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
             </div>
 
             <Navigation></Navigation>

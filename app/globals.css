@@ -119,47 +119,6 @@
   }
 }
 
-@media (max-width: 700px) {
-  .nav-bento-box {
-    margin-top: 1rem;
-    padding: 1rem;
-    min-width: auto;
-    width: 95%;
-    max-width: 500px;
-  }
-
-  .nav-container {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .nav-item {
-    width: 100%;
-    justify-content: flex-start;
-    padding: 1rem;
-  }
-
-  .nav-icon {
-    flex-shrink: 0;
-  }
-
-  .nav-text {
-    font-size: 1rem;
-  }
-
-  .tab-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-  }
-
-  .tab-bar a {
-    margin: 0.2rem 0;
-    display: block;
-    text-align: center;
-  }
-}
-
 @media (max-width: 600px) {
   :root {
     --font-size-base: 14px;
@@ -225,6 +184,7 @@ button {
 }
 
 .header-top {
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -232,13 +192,14 @@ button {
   position: relative;
 }
 
-.header-top> :last-child {
+/* Only use when uncommenting the theme switch */
+/* .header-top> :last-child {
   position: absolute;
   right: 0;
   top: 0;
-}
+} */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .header-top {
     flex-direction: column;
     align-items: center;
@@ -248,7 +209,7 @@ button {
   .header-top> :last-child {
     position: static;
   }
-}
+} */
 
 .tab-bar {
   margin-top: 1.5rem;
@@ -257,7 +218,6 @@ button {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: .5rem;
 }
 
 .tab-bar a {
@@ -265,12 +225,8 @@ button {
   font-weight: bold;
   text-decoration: none;
   background: var(--border);
-  padding: 0.375rem 0.75rem;
   border-radius: 20px;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
 }
 
 .tab-bar a:hover {
@@ -278,7 +234,6 @@ button {
   color: var(--white);
   border-color: transparent;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsl(var(--ring) / 0.3);
   text-decoration: none;
 }
 
@@ -286,13 +241,8 @@ button {
   background: var(--red);
   color: var(--white);
   border-color: transparent;
-  box-shadow: 0 4px 12px hsl(var(--ring) / 0.3);
 }
 
-.tab-bar a.active:hover {
-  background: hsl(var(--primary) / 0.9);
-  transform: translateY(-1px);
-}
 
 .nav-container {
   display: flex;
@@ -300,7 +250,7 @@ button {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0rem .5rem;
 }
 
 .nav-item {

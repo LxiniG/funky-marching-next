@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import BackToTopButton from "./components/BackToTopButton";
+import LoadingScreen from "./components/LoadingScreen";
 import NextGigBanner from "./components/NextGigBanner";
 import PagePreview from "./components/PagePreview";
 
@@ -130,6 +131,7 @@ export default function Home() {
   const [aboutUsData, setAboutUsData] = useState<AboutUsPageData | null>(null);
   const [isAboutUsLoading, setIsAboutUsLoading] = useState(true);
   const [aboutUsError, setIsAboutUsError] = useState<string | null>(null);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
 
   // Newsletter form state
   const [firstName, setFirstName] = useState("");
@@ -258,8 +260,17 @@ export default function Home() {
     setEmail("");
   };
 
+  const handleLoadingComplete = () => {
+    setShowLoadingScreen(false);
+  };
+
+  // Check if all loading is complete
+  const isAllDataLoaded = !isAboutUsLoading && !isGigLoading;
+
   return (
     <>
+      {showLoadingScreen && <LoadingScreen isLoading={!isAllDataLoaded} onAnimationComplete={handleLoadingComplete} />}
+
       {/* Always show the gig banner if data is available */}
       {!isGigLoading && !gigError && nextGig && (
         <NextGigBanner
@@ -303,7 +314,7 @@ export default function Home() {
               quality={100}
               style={{
                 transform: `perspective(1000px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
-                maxWidth: "min(90vw, 800px)",
+                maxWidth: "min(90vw, 1200px)",
                 height: "auto",
                 borderRadius: "50px",
                 boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"

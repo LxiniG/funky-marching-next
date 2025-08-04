@@ -147,7 +147,7 @@
 
 .timeline-date {
     font-weight: bold;
-    color: var(--blue);
+    color: rgb(89, 89, 235);
 }
 
 .current-date-marker .timeline-date-box {
