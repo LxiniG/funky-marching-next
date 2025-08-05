@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { buildApiUrl, getImageUrl as getStrapiImageUrl } from "@/lib/strapi-url";
 import { StrapiImage } from "@/types/strapi";
-import { Download, Image as ImageIcon, Music, RefreshCw, Video, X } from "lucide-react";
+import { Download, Image as ImageIcon, Music, Video, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./Gallery.module.css";
@@ -17,14 +18,9 @@ interface StrapiGalleryImage {
     image: StrapiImage;
 }
 
-function getImageUrl(image: StrapiImage): string {
-    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-    return image.url.startsWith('http') ? image.url : `${baseUrl}${image.url}`;
-}
-
 async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
-    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-    const response = await fetch(`${baseUrl}/api/gallery-images?populate=*`);
+    const apiUrl = buildApiUrl('gallery-images?populate=*');
+    const response = await fetch(apiUrl);
 
     if (!response.ok) {
         throw new Error("Failed to fetch gallery items from Strapi");
@@ -61,20 +57,6 @@ export default function Gallery() {
         loadgalleryImages();
     }, []);
 
-    // Refresh gallery data
-    const refreshGallery = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await fetchGalleryImages();
-            setGalleryImages(response);
-        } catch (err) {
-            console.error('Error refreshing gallery:', err);
-            setError('Failed to refresh gallery items');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleImageClick = (index: number) => {
         setSelectedImage(index);
@@ -82,7 +64,7 @@ export default function Gallery() {
     };
 
     const handleDownload = (item: StrapiGalleryImage) => {
-        const imageUrl = getImageUrl(item.image);
+        const imageUrl = getStrapiImageUrl(item.image);
         const link = document.createElement('a');
         link.href = imageUrl;
         document.body.appendChild(link);
@@ -159,18 +141,9 @@ export default function Gallery() {
                 <div style={{ color: 'var(--destructive)', textAlign: 'center', marginBottom: '2rem' }}>
                     <p>⚠️ {error}</p>
                     <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)' }}>
-                        Failed to load images from Strapi.
+                        Bilder konnten nicht geladen werden.
                     </p>
-                    <Button
-                        onClick={refreshGallery}
-                        variant="outline"
-                        size="sm"
-                        disabled={loading}
-                        style={{ marginTop: '1rem' }}
-                    >
-                        <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                        Retry Loading
-                    </Button>
+
                 </div>
             )}
 
@@ -199,7 +172,7 @@ export default function Gallery() {
                                 onClick={() => handleImageClick(index)}
                             >
                                 <Image
-                                    src={getImageUrl(item.image)}
+                                    src={getStrapiImageUrl(item.image)}
                                     alt={item.imageTitle}
                                     width={300}
                                     height={200}
@@ -247,7 +220,7 @@ export default function Gallery() {
 
                             <div className={styles.fullImageContainer}>
                                 <Image
-                                    src={getImageUrl(galleryImages[selectedImage].image)}
+                                    src={getStrapiImageUrl(galleryImages[selectedImage].image)}
                                     alt={galleryImages[selectedImage].imageTitle}
                                     width={galleryImages[selectedImage].image.width}
                                     height={galleryImages[selectedImage].image.height}

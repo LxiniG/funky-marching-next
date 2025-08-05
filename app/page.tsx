@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
+import { buildApiUrl, getImageUrl as getStrapiImageUrl } from '@/lib/strapi-url';
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -72,16 +73,12 @@ interface AboutUsPageData {
 }
 
 async function getNextGig(): Promise<StrapiGigResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const todayISO = today.toISOString();
 
-  const api = `/api/gigs?filters[gigStartDate][$gte]=${todayISO}&sort=gigStartDate:asc&pagination[limit]=1`;
-
-  const url = new URL(api, baseUrl)
-  const res = await fetch(url);
+  const apiUrl = buildApiUrl(`gigs?filters[gigStartDate][$gte]=${todayISO}&sort=gigStartDate:asc&pagination[limit]=1`);
+  const res = await fetch(apiUrl);
 
   if (!res.ok) {
     throw new Error("Failed to fetch next gig from Strapi");
@@ -93,11 +90,8 @@ async function getNextGig(): Promise<StrapiGigResponse> {
 }
 
 async function getAboutUsData(): Promise<StrapiAboutUsPageResponse> {
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-  const api = '/api/about-us-page?populate=*';
-
-  const url = new URL(api, baseUrl);
-  const res = await fetch(url);
+  const apiUrl = buildApiUrl('about-us-page?populate=*');
+  const res = await fetch(apiUrl);
 
   if (!res.ok) {
     throw new Error("Failed to fetch about us data from Strapi");
@@ -106,20 +100,6 @@ async function getAboutUsData(): Promise<StrapiAboutUsPageResponse> {
   const data = await res.json();
   console.log("🚀 ~ getAboutUsData ~ data:", data);
   return data;
-}
-
-// Utility function to get full image URL
-function getImageUrl(image: StrapiImage): string {
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-  const imageUrl = image.url;
-
-  // If the URL is already absolute, return as is
-  if (imageUrl.startsWith('http')) {
-    return imageUrl;
-  }
-
-  // Otherwise, prepend the base URL
-  return `${baseUrl}${imageUrl}`;
 }
 
 export default function Home() {
@@ -307,7 +287,7 @@ export default function Home() {
           <div className="scroll-section section-1" id="section1">
             <div className="blue-hue-circle"></div>
             <Image
-              src={getImageUrl(aboutUsData.titlePhoto)}
+              src={getStrapiImageUrl(aboutUsData.titlePhoto)}
               alt={aboutUsData.titlePhoto.alternativeText || "Landing Page Image"}
               width={aboutUsData.titlePhoto.width}
               height={aboutUsData.titlePhoto.height}
