@@ -2,6 +2,10 @@
     gap: 5px;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    /* Allow content to shrink */
+    flex: 1;
+    /* Take up available space */
 }
 
 .nextGigBox {
@@ -27,6 +31,9 @@
         transform 0.2s ease,
         box-shadow 0.2s ease;
     text-decoration: none;
+    width: max-content;
+    max-width: calc(100vw - 40px);
+    white-space: nowrap;
 }
 
 .nextGigBox:hover {

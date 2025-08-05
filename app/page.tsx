@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from '@/lib/strapi-url';
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -30,7 +31,7 @@ const pages = [
     title: "Bandleader",
     description: "Über unseren Bandleader Jörgen Welander",
     imageUrl: "/bandleader-img.jpg",
-    linkUrl: "/bandleader",
+    linkUrl: "/band-leader",
   },
   {
     title: "Galerie",
@@ -360,19 +361,27 @@ export default function Home() {
               <div className="blue-drop"></div>
             </div>
           </div>
-          <div className="scroll-section more-pages-section" id="more-pages">
-            <div className="preview-row">
-              {[...pages, ...pages, ...pages].map((page, index) => (
-                <PagePreview
-                  key={index}
-                  title={page.title}
-                  description={page.description}
-                  imageUrl={page.imageUrl}
-                  linkUrl={page.linkUrl}
-                />
-              ))}
+          <div className="more-pages-section">
+            <div className="flex items-center justify-center mb-8">
+              <h2 >Hier geht's weiter..</h2>
+              <ArrowUpRight className="h-2 w-2 sm:h-4 sm:w-4 md:h-6 md:w-6 lg:h-8 lg:w-8 ml-2" />
+            </div>
+
+            <div className="scroll-section">
+              <div className="preview-row">
+                {[...pages, ...pages, ...pages].map((page, index) => (
+                  <PagePreview
+                    key={index}
+                    title={page.title}
+                    description={page.description}
+                    imageUrl={page.imageUrl}
+                    linkUrl={page.linkUrl}
+                  />
+                ))}
+              </div>
             </div>
           </div>
+
           <BackToTopButton />
         </div>
 
