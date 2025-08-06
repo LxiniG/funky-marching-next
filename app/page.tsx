@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import BackToTopButton from "./components/BackToTopButton";
+import ErrorState from "./components/ErrorState";
 import LoadingScreen from "./components/LoadingScreen";
 import NextGigBanner from "./components/NextGigBanner";
 import PagePreview from "./components/PagePreview";
@@ -18,51 +19,39 @@ const pages = [
   {
     title: "Gigs",
     description: "Hier finden Sie alle unsere kommenden Auftritte.",
-    imageUrl: "/gig-images/img-1.jpg",
     linkUrl: "/gigs",
   },
   {
     title: "Besetzung",
     description: "Die Funky Marching Band von Funuralband bix XXL!",
-    imageUrl: "/gig-images/img-2.jpg",
     linkUrl: "/cast",
   },
   {
     title: "Bandleader",
     description: "Über unseren Bandleader Jörgen Welander",
-    imageUrl: "/bandleader-img.jpg",
     linkUrl: "/band-leader",
   },
   {
     title: "Galerie",
     description: "Bilder, Videos und Audios von der FMB in Action!",
-    imageUrl: "/gig-images/img-5.png",
     linkUrl: "/impressum",
   },
   {
     title: "Kontakt",
     description: "Kontakt zur FMB und Proben",
-    imageUrl: "/gig-images/img-6.jpg",
     linkUrl: "/contact",
+  },
+  {
+    title: "Presse",
+    description: "Presseanfragen und Medienkontakte",
+    linkUrl: "/press",
   },
   {
     title: "Impressum",
     description: "Impressum und rechtliche Hinweise",
-    imageUrl: "/gig-images/img-7.jpg",
     linkUrl: "/impressum",
   },
 ];
-
-interface StrapiAboutUsPageResponse {
-  data: {
-    id: string;
-    documentId: string;
-    aboutUsQuote: string;
-    aboutUsText: string;
-    aboutUsHistory: string;
-    titlePhoto: StrapiImage;
-  };
-}
 
 interface AboutUsPageData {
   id: string;
@@ -71,6 +60,12 @@ interface AboutUsPageData {
   aboutUsText: string;
   aboutUsHistory: string;
   titlePhoto: StrapiImage;
+  impressumImage: StrapiImage;
+  gigsImage: StrapiImage;
+  bandleaderImage: StrapiImage;
+  galleryImage: StrapiImage;
+  contactImage: StrapiImage;
+  castImage: StrapiImage;
 }
 
 async function getNextGig(): Promise<StrapiGigResponse> {
@@ -90,7 +85,7 @@ async function getNextGig(): Promise<StrapiGigResponse> {
   return data;
 }
 
-async function getAboutUsData(): Promise<StrapiAboutUsPageResponse> {
+async function getAboutUsData(): Promise<any> {
   const apiUrl = buildApiUrl('about-us-page?populate=*');
   const res = await fetch(apiUrl);
 
@@ -133,7 +128,14 @@ export default function Home() {
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
           aboutUsHistory: strapiData.data.aboutUsHistory,
-          titlePhoto: strapiData.data.titlePhoto
+          titlePhoto: strapiData.data.titlePhoto,
+          impressumImage: strapiData.data.impressumImage,
+          gigsImage: strapiData.data.gigsImage,
+          bandleaderImage: strapiData.data.bandleaderImage,
+          galleryImage: strapiData.data.galleryImage,
+          contactImage: strapiData.data.contactImage,
+          castImage: strapiData.data.castImage
+
         };
         console.log('🚀 Mapped about us data:', mappedData);
         setAboutUsData(mappedData);
@@ -245,7 +247,63 @@ export default function Home() {
     setShowLoadingScreen(false);
   };
 
-  // Check if all loading is complete
+  const handleRetryAboutUs = () => {
+    setIsAboutUsError(null);
+    setIsAboutUsLoading(true);
+
+    const fetchAboutUsData = async () => {
+      try {
+        console.log('🚀 Retrying about us data fetch...');
+        const strapiData = await getAboutUsData();
+        const mappedData: AboutUsPageData = {
+          id: strapiData.data.id,
+          documentId: strapiData.data.documentId,
+          aboutUsQuote: strapiData.data.aboutUsQuote,
+          aboutUsText: strapiData.data.aboutUsText,
+          aboutUsHistory: strapiData.data.aboutUsHistory,
+          titlePhoto: strapiData.data.titlePhoto,
+          impressumImage: strapiData.data.impressumImage,
+          gigsImage: strapiData.data.gigsImage,
+          bandleaderImage: strapiData.data.bandleaderImage,
+          galleryImage: strapiData.data.galleryImage,
+          contactImage: strapiData.data.contactImage,
+          castImage: strapiData.data.castImage
+        };
+        setAboutUsData(mappedData);
+      } catch (error) {
+        console.error("❌ Error retrying about us data:", error);
+        setIsAboutUsError("Failed to load about us data");
+      } finally {
+        setIsAboutUsLoading(false);
+      }
+    };
+
+    fetchAboutUsData();
+  };
+
+  // Function to get the appropriate Strapi image for each page
+  const getStrapiImageForPage = (pageTitle: string): string => {
+    if (!aboutUsData) return "";
+
+    switch (pageTitle) {
+      case "Gigs":
+        return getStrapiImageUrl(aboutUsData.gigsImage);
+      case "Besetzung":
+        return getStrapiImageUrl(aboutUsData.castImage);
+      case "Bandleader":
+        return getStrapiImageUrl(aboutUsData.bandleaderImage);
+      case "Galerie":
+        return getStrapiImageUrl(aboutUsData.galleryImage);
+      case "Kontakt":
+        return getStrapiImageUrl(aboutUsData.contactImage);
+      case "Presse":
+        return getStrapiImageUrl(aboutUsData.impressumImage); // Using impressum image as fallback for press
+      case "Impressum":
+        return getStrapiImageUrl(aboutUsData.impressumImage);
+      default:
+        return getStrapiImageUrl(aboutUsData.impressumImage); // Default fallback
+    }
+  };  // Check if all loading is complete
   const isAllDataLoaded = !isAboutUsLoading && !isGigLoading;
 
   return (
@@ -278,7 +336,11 @@ export default function Home() {
       {aboutUsError && (
         <div className="scroll-section section-1" id="section1">
           <div className="blue-hue-circle"></div>
-          <h1>Error: {aboutUsError}</h1>
+          <ErrorState
+            title="Hauptseite konnte nicht geladen werden"
+            message="Es gab ein Problem beim Laden der Hauptseiten-Daten. Bitte versuche es später erneut."
+            onRetry={handleRetryAboutUs}
+          />
         </div>
       )}
 
@@ -374,7 +436,7 @@ export default function Home() {
                     key={index}
                     title={page.title}
                     description={page.description}
-                    imageUrl={page.imageUrl}
+                    imageUrl={getStrapiImageForPage(page.title)}
                     linkUrl={page.linkUrl}
                   />
                 ))}

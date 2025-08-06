@@ -10,6 +10,7 @@ const navigationLinks = [
     { href: "/band-leader", label: "Bandleader" },
     { href: "/gallery", label: "Galerie" },
     { href: "/contact", label: "Kontakt" },
+    { href: "/press", label: "Presse" },
     { href: "/impressum", label: "Impressum" },
 ];
 

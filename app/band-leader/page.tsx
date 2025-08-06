@@ -1,21 +1,154 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { buildApiUrl, getImageUrl as getStrapiImageUrl } from '@/lib/strapi-url';
+import { StrapiImage } from '@/types/strapi';
 import { Globe } from 'lucide-react';
 import { NextPage } from 'next';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import ErrorState from '../components/ErrorState';
 import styles from "./Bandleader.module.css";
 
 interface Props { }
 
+interface BandleaderData {
+    id: number;
+    title: string;
+    about: string;
+    websiteLink: string;
+    bandleaderImage: StrapiImage;
+}
+
+async function getBandleaderData(): Promise<any> {
+    const apiUrl = buildApiUrl('bandleader-page?populate=*');
+    const res = await fetch(apiUrl);
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch bandleader data from Strapi");
+    }
+
+    const data = await res.json();
+    console.log("🚀 ~ getBandleaderData ~ data:", data);
+    return data;
+}
+
+interface Props { }
+
 const Page: NextPage<Props> = ({ }) => {
+    const [bandleaderData, setBandleaderData] = useState<BandleaderData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        console.log('🚀 Bandleader useEffect triggered');
+        const fetchBandleaderData = async () => {
+            try {
+                console.log('🚀 Starting to fetch bandleader data...');
+                setIsLoading(true);
+                setError(null);
+                const strapiData = await getBandleaderData();
+                console.log('🚀 Received bandleader data:', strapiData);
+
+                const mappedData: BandleaderData = {
+                    id: strapiData.data.id,
+                    title: strapiData.data.title,
+                    about: strapiData.data.about,
+                    websiteLink: strapiData.data.websiteLink,
+                    bandleaderImage: strapiData.data.bandleaderImage
+                };
+
+                console.log('🚀 Mapped bandleader data:', mappedData);
+                setBandleaderData(mappedData);
+            } catch (err) {
+                console.error('❌ Error fetching bandleader data:', err);
+                setError('Failed to load bandleader data');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBandleaderData();
+    }, []);
+
+    const handleRetry = () => {
+        setError(null);
+        setIsLoading(true);
+        // Re-trigger the useEffect by updating a dependency or call fetch function directly
+        const fetchBandleaderData = async () => {
+            try {
+                const strapiData = await getBandleaderData();
+                const mappedData: BandleaderData = {
+                    id: strapiData.data.id,
+                    title: strapiData.data.title,
+                    about: strapiData.data.about,
+                    websiteLink: strapiData.data.websiteLink,
+                    bandleaderImage: strapiData.data.bandleaderImage
+                };
+                setBandleaderData(mappedData);
+            } catch (err) {
+                setError('Failed to load bandleader data');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchBandleaderData();
+    };
+
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.imageContainer}>
+                    <Skeleton className="w-[300px] h-[300px] rounded-full" />
+                </div>
+
+                <div className="mb-6">
+                    <Skeleton className="h-10 w-64 mx-auto" />
+                </div>
+
+                <div className={styles.textContent}>
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <Skeleton className="h-4 w-3/4 mb-4" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <Skeleton className="h-4 w-5/6 mb-4" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <Skeleton className="h-4 w-4/5 mb-4" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <Skeleton className="h-4 w-3/4 mb-4" />
+                </div>
+
+                <div className={styles.websiteLink}>
+                    <Skeleton className="h-12 w-48" />
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <ErrorState
+                    title="Bandleader Daten konnten nicht geladen werden"
+                    message="Es gab ein Problem beim Laden der Bandleader-Informationen. Bitte versuche es später erneut."
+                    onRetry={handleRetry}
+                />
+            </div>
+        );
+    }
+
+    // Success state with data
+    if (!bandleaderData) return null;
     return (
         <div className={styles.container}>
             {/* Circle Image */}
             <div className={styles.imageContainer}>
                 <Image
-                    src="/bandleader-image.jpg"
-                    alt="Jörgen Welander"
+                    src={getStrapiImageUrl(bandleaderData.bandleaderImage)}
+                    alt={bandleaderData.bandleaderImage.alternativeText || bandleaderData.title}
                     width={300}
                     height={300}
                     className={styles.circleImage}
@@ -23,44 +156,31 @@ const Page: NextPage<Props> = ({ }) => {
                 />
             </div>
 
-            {/* Name */}
-            <h1 className={styles.name}>Jörgen Welander</h1>
-
-            {/* About Text */}
+            <h1 className={styles.name}>{bandleaderData.title}</h1>
             <div className={styles.textContent}>
-                <p>
-                    Geboren in Schweden, lebt seit vielen Jahren in Deutschland als freiberuflicher Tubist und E-Bassist. Nach seinem Studium an der Hochschule für Musik in Freiburg setzte er seine Laufbahn als erfolgreicher Jazzmusiker fort.
-                </p>
-                <p>
-                    Er ist Dozent an der Hochschule für Kunst, Design und Populäre Musik (hKDM) bzw. das International Music College Freiburg (IMCF) und unterrichtet am Musiclab Emmendingen und in der Musikschule Freiburg.
-                </p>
-                <p>
-                    Jörgen Welander gibt regelmäßig Workshops für Brassbands, Bandcoaching und Improvisation. Langjährige Erfahrung als Bandleader, Komponist und Arrangeur in vielen unterschiedlichen Musikstilrichtungen.
-                </p>
-                <p>
-                    Zu den Highlights seiner Karriere gehören mehrere Europatourneen mit "Howard Johnson & Gravity". Er spielt regelmäßig in verschiedenen Formationen, u.a. in Jazz-, Rock-, Funk- und Folkbands sowie in Projekten für Neue Musik und Theater.
-                </p>
-                <p>
-                    Er gehört zu den wenigen Tubisten Deutschlands, die die Tuba professionell in den populären Stilrichtungen als Bassist und Solist einsetzen.
-                </p>
-                <p>
-                    Im Jahr 2005 gründete er die Funky Marching Band an drei Musikschulen (Jazz & Rock Schulen Freiburg, Musiclab Emmendingen und Musikschule Freiburg), für die er die Stücke in Maßarbeit zugeschneidert komponiert und arrangiert.
-                </p>
+                {/* Split biography by paragraphs and render each as a separate <p> */}
+                {bandleaderData.about.split('\n\n').map((paragraph, index) => (
+                    <p key={index}>
+                        {paragraph}
+                    </p>
+                ))}
             </div>
 
             {/* Website Link */}
-            <div className={styles.websiteLink}>
-                <Button asChild size="lg" className="gap-2">
-                    <a
-                        href="https://www.welander.de"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Globe className="w-4 h-4" />
-                        Zu Jörgens Website
-                    </a>
-                </Button>
-            </div>
+            {bandleaderData.websiteLink && (
+                <div className={styles.websiteLink}>
+                    <Button asChild size="lg" className="gap-2">
+                        <a
+                            href={bandleaderData.websiteLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Globe className="w-4 h-4" />
+                            Zu Jörgens Website
+                        </a>
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }
