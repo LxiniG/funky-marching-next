@@ -1,4 +1,5 @@
 "use client";
+import ErrorState from "@/components/custom/error-state/ErrorState";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,7 +54,6 @@ export default function Gallery() {
                 setLoading(false);
             }
         };
-
         loadgalleryImages();
     }, []);
 
@@ -77,8 +77,8 @@ export default function Gallery() {
             <div className={styles.container}>
                 <h1>Galerie</h1>
                 <p className={styles.description}>
-                    Bilder, Audios und Videos von unseren Gigs und Aufnahmen.                </p>
-
+                    Bilder, Audios und Videos von unseren Gigs und Aufnahmen.
+                </p>
                 <Tabs defaultValue="images" className={styles.tabsContainer}>
                     <TabsList className={styles.tabsList}>
                         <TabsTrigger value="images" className={styles.tabsTrigger}>
@@ -131,6 +131,7 @@ export default function Gallery() {
     }
 
     return (
+
         <div className={styles.container}>
             <h1>Galerie</h1>
             <p className={styles.description}>
@@ -138,13 +139,7 @@ export default function Gallery() {
             </p>
 
             {error && (
-                <div style={{ color: 'var(--destructive)', textAlign: 'center', marginBottom: '2rem' }}>
-                    <p>⚠️ {error}</p>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--muted-foreground)' }}>
-                        Bilder konnten nicht geladen werden.
-                    </p>
-
-                </div>
+                <ErrorState message="Bilder konnten nicht geladen werden."></ErrorState>
             )}
 
             <Tabs defaultValue="images" className={styles.tabsContainer}>

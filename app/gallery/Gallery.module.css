@@ -71,8 +71,6 @@
     padding: 1rem 0;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    /* Performance optimization to prevent layout thrashing */
-    contain: layout;
 }
 
 @media (max-width: 1200px) {
@@ -102,11 +100,8 @@
     background: var(--card);
     border: 1px solid var(--border);
     margin-bottom: 2rem;
-    break-inside: avoid;
     display: inline-block;
     width: 100%;
-    /* Performance optimization for hover animations */
-    will-change: transform;
 }
 
 .imageCard:hover {
@@ -209,7 +204,7 @@
     align-items: center;
     overflow: hidden;
     min-height: 0;
-    contain: layout;
+
 }
 
 .fullImage {

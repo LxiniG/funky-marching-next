@@ -30,17 +30,6 @@ export function BentoGridItem({
     className,
     tiltDirection = 'none'
 }: BentoGridItemProps) {
-    const getTiltStyle = () => {
-        switch (tiltDirection) {
-            case 'left':
-                return { transform: 'perspective(1000px) rotateX(-3deg) rotateY(3deg)' }
-            case 'right':
-                return { transform: 'perspective(1000px) rotateX(3deg) rotateY(-3deg)' }
-            default:
-                return {}
-        }
-    }
-
     return (
         <div
             className={cn(
