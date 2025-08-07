@@ -8,7 +8,7 @@ import { Globe } from 'lucide-react';
 import { NextPage } from 'next';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import ErrorState from '../components/ErrorState';
+import ErrorState from '../../components/custom/error-state/ErrorState';
 import styles from "./Bandleader.module.css";
 
 interface Props { }
