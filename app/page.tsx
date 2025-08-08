@@ -67,6 +67,7 @@ interface AboutUsPageData {
   galleryImage: StrapiImage;
   contactImage: StrapiImage;
   castImage: StrapiImage;
+  newsletterContactMailAdress: string;
 }
 
 async function getNextGig(): Promise<StrapiGigResponse> {
@@ -128,6 +129,7 @@ export default function Home() {
         console.log('🚀 Received about us data:', strapiData);
         const mappedData: AboutUsPageData = {
           id: strapiData.data.id,
+          newsletterContactMailAdress: strapiData.data.newsletterContactMailAdress,
           documentId: strapiData.data.documentId,
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
@@ -238,7 +240,7 @@ export default function Home() {
     console.log('Newsletter subscription:', { firstName, lastName, email });
 
     // Send newsletter subscription email
-    const result = await sendNewsletterSubscriptionEmail(email, firstName, lastName);
+    const result = await sendNewsletterSubscriptionEmail(aboutUsData?.newsletterContactMailAdress || "", email, firstName, lastName);
 
     if (result.success) {
       toast.success(`Boom, ${firstName}! Ab jetzt bist Du immer auf dem neuesten funky Stand.`, {
@@ -271,6 +273,7 @@ export default function Home() {
         const strapiData = await getAboutUsData();
         const mappedData: AboutUsPageData = {
           id: strapiData.data.id,
+          newsletterContactMailAdress: strapiData.data.newsletterContactMailAdress,
           documentId: strapiData.data.documentId,
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
