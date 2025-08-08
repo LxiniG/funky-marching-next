@@ -20,6 +20,71 @@ export interface StrapiImage {
 
 }
 
+export interface StrapiAudio {
+    id: number;
+    documentId: string;
+    name: string;
+    alternativeText: string | null;
+    caption: string | null;
+    width: null;
+    height: null;
+    formats: null;
+    hash: string;
+    ext: string;
+    mime: string;
+    size: number;
+    url: string;
+    previewUrl: string | null;
+    provider: string;
+    provider_metadata: any | null;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+}
+
+export interface StrapiFile {
+    id: number;
+    documentId: string;
+    name: string;
+    alternativeText: string | null;
+    caption: string | null;
+    width: null;
+    height: null;
+    formats: null;
+    hash: string;
+    ext: string;
+    mime: string;
+    size: number;
+    url: string;
+    previewUrl: string | null;
+    provider: string;
+    provider_metadata: any | null;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+}
+
+export interface StrapiVideo {
+    id: number;
+    documentId: string;
+    name: string;
+    alternativeText: string | null;
+    caption: string | null;
+    width: null;
+    height: null;
+    formats: null;
+    hash: string;
+    ext: string;
+    mime: string;
+    size: number;
+    url: string;
+    previewUrl: string | null;
+    provider: string;
+    provider_metadata: any | null;
+    createdAt: string;
+    updatedAt: string;
+    publishedAt: string;
+}
 
 export interface StrapiGigResponse {
     data: Array<{
@@ -41,3 +106,5 @@ export interface StrapiGigResponse {
         };
     };
 }
+
+

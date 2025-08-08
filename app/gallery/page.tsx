@@ -5,7 +5,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from "@/lib/strapi-url";
-import { StrapiImage } from "@/types/strapi";
+import { StrapiAudio, StrapiImage } from "@/types/strapi";
 import { Download, Image as ImageIcon, Music, Video, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -17,6 +17,14 @@ interface StrapiGalleryImage {
     imageDate: Date;
     imageTitle: string;
     image: StrapiImage;
+}
+
+interface StrapiGalleryAudio {
+    id: number;
+    audioTitle: string;
+    audioDescription: string;
+    audio: StrapiAudio;
+    audioDate?: Date;
 }
 
 async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
@@ -31,14 +39,29 @@ async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
     return data["data"];
 }
 
+async function fetchAudioFiles(): Promise<StrapiGalleryAudio[]> {
+    const apiUrl = buildApiUrl('gallery-audios?populate=*');
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch audio files from Strapi");
+    }
+    const data = await response.json();
+    console.log("🚀 ~ fetchAudioFiles ~ response:", data)
+    return data["data"];
+}
+
 
 
 export default function Gallery() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [galleryImages, setGalleryImages] = useState<StrapiGalleryImage[]>([]);
+    const [audioFiles, setAudioFiles] = useState<StrapiGalleryAudio[]>([]);
     const [loading, setLoading] = useState(true);
+    const [audioLoading, setAudioLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [audioError, setAudioError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadgalleryImages = async () => {
@@ -55,7 +78,23 @@ export default function Gallery() {
             }
         };
         loadgalleryImages();
+        const loadAudioFiles = async () => {
+            try {
+                setAudioLoading(true);
+                setAudioError(null);
+                const response = await fetchAudioFiles();
+                setAudioFiles(response);
+            } catch (err) {
+                console.error('Error fetching audio files:', err);
+                setAudioError('Failed to load audio files');
+            } finally {
+                setAudioLoading(false);
+            }
+        };
+        loadAudioFiles();
     }, []);
+
+
 
 
     const handleImageClick = (index: number) => {
@@ -63,10 +102,13 @@ export default function Gallery() {
         setIsDialogOpen(true);
     };
 
-    const handleDownload = (item: StrapiGalleryImage) => {
-        const imageUrl = getStrapiImageUrl(item.image);
+    const handleAudioDownload = (item: StrapiGalleryAudio) => {
+        const audioUrl = item.audio.url;
         const link = document.createElement('a');
-        link.href = imageUrl;
+        link.href = audioUrl;
+        link.download = item.audio.name || 'audio-file';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -154,7 +196,7 @@ export default function Gallery() {
                     </TabsTrigger>
                     <TabsTrigger value="audio" className={styles.tabsTrigger}>
                         <Music className="w-4 h-4 mr-2" />
-                        Audio (0)
+                        Audio ({audioFiles.length})
                     </TabsTrigger>
                 </TabsList>
 
@@ -169,8 +211,8 @@ export default function Gallery() {
                                 <Image
                                     src={getStrapiImageUrl(item.image)}
                                     alt={item.imageTitle}
-                                    width={300}
-                                    height={200}
+                                    width={100}
+                                    height={100}
                                     className={styles.previewImage}
                                     style={{ objectFit: 'cover' }}
                                 />
@@ -192,12 +234,63 @@ export default function Gallery() {
                 </TabsContent>
 
                 <TabsContent value="audio" className={styles.tabContent}>
-                    <div className={styles.comingSoon}>
-                        <Music className="w-12 h-12 mb-4 text-muted-foreground" />
-                        <h2>Audio coming soon!</h2>
-                        <p>Bald könnt ihr hier unsere Musik hören und downloaden.</p>
-                    </div>
+                    {audioLoading && (
+                        <div className="max-w-4xl mx-auto space-y-4">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} className="min-h-[120px] bg-card border border-border rounded-lg">
+                                    <Skeleton className="h-full w-full rounded-lg" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
+                    {audioError && (
+                        <ErrorState message="Audio-Dateien konnten nicht geladen werden." />
+                    )}
+
+                    {!audioLoading && !audioError && audioFiles.length === 0 && (
+                        <div className={styles.comingSoon}>
+                            <Music className="w-12 h-12 mb-4 text-muted-foreground" />
+                            <h2>Keine Audio-Dateien gefunden</h2>
+                            <p>Momentan sind keine Audio-Dateien verfügbar.</p>
+                        </div>
+                    )}
+
+                    {!audioLoading && !audioError && audioFiles.length > 0 && (
+                        <div className="max-w-4xl mx-auto space-y-4">
+                            {audioFiles.map((audio, index) => (
+                                <div key={audio.id} className="p-6 pt-8 bg-card border border-border rounded-lg">
+                                    <audio
+                                        controls
+                                        className="w-full mb-8"
+                                        preload="metadata"
+                                    >
+                                        <source src={audio.audio.url} type={audio.audio.mime} />
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                    <div className="mb-4">
+                                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                                            {audio.audioTitle}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground mb-3">
+                                            {audio.audioDescription}
+                                        </p>
+                                    </div>
+
+
+
+                                    <Button
+                                        variant="default"
+                                        onClick={() => handleAudioDownload(audio)}
+                                        className="h-10 px-4 bg-white text-black hover:bg-gray-100"
+                                    >
+                                        <Download className="h-4 w-4 mr-2" />
+                                        {'Download ' + '(' + (audio.audio.size / 1000).toFixed(1) + ' MB)'}
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </TabsContent>
             </Tabs>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -230,13 +323,6 @@ export default function Gallery() {
                                 <p className={styles.fullImageDescription}>
                                     {galleryImages[selectedImage].imageDescription}
                                 </p>
-                                <Button
-                                    onClick={() => handleDownload(galleryImages[selectedImage])}
-                                    className={styles.downloadButton}
-                                >
-                                    <Download className="w-4 h-4 mr-2" />
-                                    Bild herunterladen
-                                </Button>
                             </div>
                         </>
                     )}

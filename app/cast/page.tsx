@@ -6,7 +6,6 @@ import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid"
 import { Skeleton } from "@/components/ui/skeleton"
 import { buildApiUrl } from "@/lib/strapi-url"
 import { StrapiImage } from "@/types"
-import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 
 function CastSkeleton() {
@@ -79,54 +78,50 @@ export default function CastPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-black dark:to-slate-900 p-4">
-      <div className="max-w-7xl mx-auto py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Unsere Besetzungen
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Von Combo bis XXL - die Funky Marching Band in verschiedenen Besetzungen für jeden Anlass
-          </p>
-        </motion.div>
-
-        {loading && <CastSkeleton />}
-
-        {error && (
-          <ErrorState
-            title="Besetzungen konnten nicht geladen werden"
-            message={error}
-            onRetry={handleRetry}
-          />
-        )}
-
-        {!loading && casts.length === 0 && (
-          <ErrorState message="Keine Besetzungen gefunden"></ErrorState>
-        )}
-
-        {!loading && casts.length > 0 && (
-          <BentoGrid>
-            {casts.map((cast, index) => {
-              const tiltDirection = index % 4 === 0 || index % 4 === 3 ? 'left' : 'right'
-              return (
-                <BentoGridItem
-                  key={cast.id}
-                  delay={index * 0.15}
-                  tiltDirection={tiltDirection}
-                  className="min-h-[400px]"
-                >
-                  <CastBentoCard {...cast} />
-                </BentoGridItem>
-              )
-            })}
-          </BentoGrid>
-        )}
+    <div className="max-w-7xl mx-auto py-12">
+      <div
+        className="text-center mb-12"
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Unsere Besetzungen
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Von Combo bis XXL - die Funky Marching Band in verschiedenen Besetzungen für jeden Anlass
+        </p>
       </div>
+
+
+      {loading && <CastSkeleton />}
+
+      {error && (
+        <ErrorState
+          title="Besetzungen konnten nicht geladen werden"
+          message={error}
+          onRetry={handleRetry}
+        />
+      )}
+
+      {!loading && casts.length === 0 && (
+        <ErrorState message="Keine Besetzungen gefunden"></ErrorState>
+      )}
+
+      {!loading && casts.length > 0 && (
+        <BentoGrid>
+          {casts.map((cast, index) => {
+            const tiltDirection = index % 4 === 0 || index % 4 === 3 ? 'left' : 'right'
+            return (
+              <BentoGridItem
+                key={cast.id}
+                delay={index * 0.15}
+                tiltDirection={tiltDirection}
+                className="min-h-[400px]"
+              >
+                <CastBentoCard {...cast} />
+              </BentoGridItem>
+            )
+          })}
+        </BentoGrid>
+      )}
     </div>
   )
 }
