@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { buildApiUrl } from './strapi-url';
 
 interface EmailOptions {
     to: string;
+    cc?: string;
     subject: string;
     html: string;
-    from?: string;
 }
 
 interface SendEmailResponse {
@@ -21,8 +22,10 @@ export function useSendEmail() {
         setIsLoading(true);
         setError(null);
 
+        const url = buildApiUrl('mail-controller/send');
+
         try {
-            const response = await fetch('/api/send-email', {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,8 +52,9 @@ export function useSendEmail() {
     const sendNewsletterSubscriptionEmail = async (subscriberEmail: string, firstName?: string, lastName?: string): Promise<SendEmailResponse> => {
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : 'Name nicht angegeben';
 
-        return sendEmail({
+        const body = {
             to: 'linus.bung@gmx.de',
+            cc: 'info@funkymarchingband.com',
             subject: 'Neue Newsletter-Anmeldung - FMB',
             html: `
         <h2>Neue Newsletter-Anmeldung</h2>
@@ -62,9 +66,11 @@ export function useSendEmail() {
         <hr>
         <p>Dies ist eine automatische Benachrichtigung von der FMB Website.</p>
       `,
-            from: 'noreply@funkymarchingband.com'
-        });
+        }
+        return sendEmail(body);
     };
+
+
 
     return {
         sendEmail,

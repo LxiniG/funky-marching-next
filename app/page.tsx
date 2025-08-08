@@ -241,7 +241,7 @@ export default function Home() {
     const result = await sendNewsletterSubscriptionEmail(email, firstName, lastName);
 
     if (result.success) {
-      toast.success(`Boom, ${firstName}! Du hast dich erfolgreich für unseren Newsletter angemeldet.`, {
+      toast.success(`Boom, ${firstName}! Ab jetzt bist Du immer auf dem neuesten funky Stand.`, {
         description: "Die Bestätigungsmail ist unterwegs.",
         duration: 5000,
       });
