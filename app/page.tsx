@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from '@/lib/strapi-url';
+import { useSendEmail } from '@/lib/use-send-email';
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -34,7 +35,7 @@ const pages = [
   {
     title: "Galerie",
     description: "Bilder, Videos und Audios von der FMB in Action!",
-    linkUrl: "/impressum",
+    linkUrl: "/gallery",
   },
   {
     title: "Kontakt",
@@ -113,6 +114,9 @@ export default function Home() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+
+  // Email hook for newsletter subscriptions
+  const { sendNewsletterSubscriptionEmail, isLoading: isEmailLoading, error: emailError } = useSendEmail();
 
   useEffect(() => {
     console.log('🚀 AboutUs useEffect triggered');
@@ -217,7 +221,7 @@ export default function Home() {
     setRotate({ x: 5, y: 5 });
   };
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
@@ -233,14 +237,24 @@ export default function Home() {
 
     console.log('Newsletter subscription:', { firstName, lastName, email });
 
-    toast.success(`Boom, ${firstName}! Du hast dich erfolgreich für unseren Newsletter angemeldet.`, {
-      description: "Die Bestätigungsmail ist unterwegs.",
-      duration: 5000,
-    });
+    // Send newsletter subscription email
+    const result = await sendNewsletterSubscriptionEmail(email, firstName, lastName);
 
-    setFirstName("");
-    setLastName("");
-    setEmail("");
+    if (result.success) {
+      toast.success(`Boom, ${firstName}! Du hast dich erfolgreich für unseren Newsletter angemeldet.`, {
+        description: "Die Bestätigungsmail ist unterwegs.",
+        duration: 5000,
+      });
+
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+    } else {
+      toast.error("Fehler beim Senden der Anmeldung.", {
+        description: result.error || "Bitte versuche es später erneut.",
+        duration: 5000,
+      });
+    }
   };
 
   const handleLoadingComplete = () => {
@@ -404,12 +418,14 @@ export default function Home() {
                     placeholder="Vorname"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    disabled={isEmailLoading}
                   />
                   <Input
                     type="text"
                     placeholder="Nachname"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    disabled={isEmailLoading}
                   />
                 </div>
                 <Input
@@ -417,8 +433,11 @@ export default function Home() {
                   placeholder="Email hier eingeben"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isEmailLoading}
                 />
-                <Button type="submit" className="mt-5">Abonnieren</Button>
+                <Button type="submit" className="mt-5" disabled={isEmailLoading}>
+                  {isEmailLoading ? "Sende..." : "Abonnieren"}
+                </Button>
               </form>
               <div className="blue-drop"></div>
             </div>

@@ -47,7 +47,7 @@ export default function RootLayout({
       <body className={`${bricolage.className} ${bricolage.variable}`}> {/* Apply the font class and variable */}
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
