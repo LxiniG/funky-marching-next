@@ -27,6 +27,14 @@ interface StrapiGalleryAudio {
     audioDate?: Date;
 }
 
+interface StrapiGalleryVideo {
+    id: number;
+    videoTitle: string;
+    videoDescription: string;
+    video: StrapiImage;
+    videoDate?: Date;
+}
+
 async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
     const apiUrl = buildApiUrl('gallery-images?populate=*');
     const response = await fetch(apiUrl);
@@ -51,6 +59,18 @@ async function fetchAudioFiles(): Promise<StrapiGalleryAudio[]> {
     return data["data"];
 }
 
+async function fetchVideoFiles(): Promise<StrapiGalleryVideo[]> {
+    const apiUrl = buildApiUrl('gallery-videos?populate=*');
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch video files from Strapi");
+    }
+    const data = await response.json();
+    console.log("🚀 ~ fetchVideoFiles ~ response:", data)
+    return data["data"];
+}
+
 
 
 export default function Gallery() {
@@ -58,10 +78,13 @@ export default function Gallery() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [galleryImages, setGalleryImages] = useState<StrapiGalleryImage[]>([]);
     const [audioFiles, setAudioFiles] = useState<StrapiGalleryAudio[]>([]);
+    const [videoFiles, setVideoFiles] = useState<StrapiGalleryVideo[]>([]);
     const [loading, setLoading] = useState(true);
     const [audioLoading, setAudioLoading] = useState(false);
+    const [videoLoading, setVideoLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [audioError, setAudioError] = useState<string | null>(null);
+    const [videoError, setVideoError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadgalleryImages = async () => {
@@ -92,6 +115,21 @@ export default function Gallery() {
             }
         };
         loadAudioFiles();
+
+        const loadVideoFiles = async () => {
+            try {
+                setVideoLoading(true);
+                setVideoError(null);
+                const response = await fetchVideoFiles();
+                setVideoFiles(response);
+            } catch (err) {
+                console.error('Error fetching video files:', err);
+                setVideoError('Failed to load video files');
+            } finally {
+                setVideoLoading(false);
+            }
+        };
+        loadVideoFiles();
     }, []);
 
 
@@ -107,6 +145,18 @@ export default function Gallery() {
         const link = document.createElement('a');
         link.href = audioUrl;
         link.download = item.audio.name || 'audio-file';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleVideoDownload = (item: StrapiGalleryVideo) => {
+        const videoUrl = getStrapiImageUrl(item.video);
+        const link = document.createElement('a');
+        link.href = videoUrl;
+        link.download = item.video.alternativeText || 'video-file';
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         document.body.appendChild(link);
@@ -192,7 +242,7 @@ export default function Gallery() {
                     </TabsTrigger>
                     <TabsTrigger value="videos" className={styles.tabsTrigger}>
                         <Video className="w-4 h-4 mr-2" />
-                        Videos (0)
+                        Videos ({videoFiles.length})
                     </TabsTrigger>
                     <TabsTrigger value="audio" className={styles.tabsTrigger}>
                         <Music className="w-4 h-4 mr-2" />
@@ -225,12 +275,61 @@ export default function Gallery() {
                 </TabsContent>
 
                 <TabsContent value="videos" className={styles.tabContent}>
-                    <div className={styles.comingSoon}>
-                        <Video className="w-12 h-12 mb-4 text-muted-foreground" />
-                        <h2>Videos coming soon!</h2>
-                        <p>Wir arbeiten daran, euch bald unsere besten Video-Momente zu zeigen.</p>
-                    </div>
+                    {videoLoading && (
+                        <div className="max-w-4xl mx-auto space-y-4">
+                            {Array.from({ length: 3 }).map((_, i) => (
+                                <div key={i} className="min-h-[300px] bg-card border border-border rounded-lg">
+                                    <Skeleton className="h-full w-full rounded-lg" />
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
+                    {videoError && (
+                        <ErrorState message="Video-Dateien konnten nicht geladen werden." />
+                    )}
+
+                    {!videoLoading && !videoError && videoFiles.length === 0 && (
+                        <div className={styles.comingSoon}>
+                            <Video className="w-12 h-12 mb-4 text-muted-foreground" />
+                            <h2>Keine Video-Dateien gefunden</h2>
+                            <p>Momentan sind keine Video-Dateien verfügbar.</p>
+                        </div>
+                    )}
+
+                    {!videoLoading && !videoError && videoFiles.length > 0 && (
+                        <div className="max-w-4xl mx-auto space-y-4 m-4">
+                            {videoFiles.map((video, index) => (
+                                <div key={video.id} className="p-6 pt-8 bg-card border border-border rounded-lg">
+                                    <video
+                                        controls
+                                        className="w-full mb-8 max-h-96"
+                                        preload="metadata"
+                                    >
+                                        <source src={getStrapiImageUrl(video.video)} type={video.video.mime} />
+                                        Your browser does not support the video element.
+                                    </video>
+                                    <div className="mb-4">
+                                        <h3 className="text-lg font-semibold text-foreground mb-2">
+                                            {video.videoTitle}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground mb-3">
+                                            {video.videoDescription}
+                                        </p>
+                                    </div>
+
+                                    <Button
+                                        variant="default"
+                                        onClick={() => handleVideoDownload(video)}
+                                        className="h-10 px-4 bg-white text-black hover:bg-gray-100"
+                                    >
+                                        <Download className="h-4 w-4 mr-2" />
+                                        {'Download ' + '(' + (video.video.size / 1000).toFixed(1) + ' MB)'}
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="audio" className={styles.tabContent}>
