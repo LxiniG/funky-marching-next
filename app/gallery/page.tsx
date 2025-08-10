@@ -304,8 +304,8 @@ export default function Gallery() {
                                 <Image
                                     src={getStrapiImageUrl(item.image)}
                                     alt={item.imageTitle}
-                                    width={100}
-                                    height={100}
+                                    width={500}
+                                    height={500}
                                     className={styles.previewImage}
                                     style={{ objectFit: 'cover' }}
                                 />
