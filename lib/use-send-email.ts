@@ -34,30 +34,9 @@ export function useSendEmail() {
             body: requestBody
         };
 
-        // Log complete request details
-        console.log("🚀 ~ sendEmail ~ FULL REQUEST DETAILS:");
-        console.log("URL:", url);
-        console.log("Method:", requestConfig.method);
-        console.log("Headers:", requestConfig.headers);
-        console.log("Body (string):", requestBody);
-        console.log("Body (parsed):", options);
-        console.log("🚀 ~ sendEmail ~ Request config:", requestConfig);
-        console.log("🚀 ~ sendEmail ~ Making request at:", new Date().toISOString());
 
         try {
-            const startTime = performance.now();
             const response = await fetch(url, requestConfig);
-            const endTime = performance.now();
-
-            console.log("🚀 ~ sendEmail ~ Request took:", `${endTime - startTime}ms`);
-            console.log("🚀 ~ sendEmail ~ RESPONSE DETAILS:");
-            console.log("Status:", response.status);
-            console.log("Status Text:", response.statusText);
-            console.log("Headers:", Object.fromEntries(response.headers.entries()));
-            console.log("URL:", response.url);
-            console.log("Response type:", response.type);
-
-            // Try to get response text first to see what's actually returned
             const responseText = await response.text();
             console.log("🚀 ~ sendEmail ~ raw response:", responseText);
 
@@ -80,7 +59,6 @@ export function useSendEmail() {
             setIsLoading(false);
             return { success: true, data };
         } catch (err) {
-            console.log("🚀 ~ sendEmail ~ full error:", err);
 
             let errorMessage = 'An unexpected error occurred';
 
@@ -91,10 +69,8 @@ export function useSendEmail() {
             } else if (err && typeof err === 'object') {
                 // Handle object errors by stringifying them
                 errorMessage = JSON.stringify(err);
-                console.log("🚀 ~ sendEmail ~ object error stringified:", errorMessage);
             }
 
-            console.log("🚀 ~ sendEmail ~ final errorMessage:", errorMessage);
             setError(errorMessage);
             setIsLoading(false);
             return { success: false, error: errorMessage };

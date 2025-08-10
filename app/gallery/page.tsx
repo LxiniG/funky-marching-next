@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from "@/lib/strapi-url";
 import { StrapiAudio, StrapiImage } from "@/types/strapi";
-import { Download, Image as ImageIcon, Music, Video, X } from "lucide-react";
+import { Image as ImageIcon, Music, Video, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./Gallery.module.css";
@@ -33,6 +33,7 @@ interface StrapiGalleryVideo {
     videoDescription: string;
     video: StrapiImage;
     videoDate?: Date;
+    videoPoster?: StrapiImage;
 }
 
 async function fetchGalleryImages(): Promise<StrapiGalleryImage[]> {
@@ -79,12 +80,40 @@ export default function Gallery() {
     const [galleryImages, setGalleryImages] = useState<StrapiGalleryImage[]>([]);
     const [audioFiles, setAudioFiles] = useState<StrapiGalleryAudio[]>([]);
     const [videoFiles, setVideoFiles] = useState<StrapiGalleryVideo[]>([]);
+    const [videoThumbnails, setVideoThumbnails] = useState<{ [key: number]: string }>({});
     const [loading, setLoading] = useState(true);
     const [audioLoading, setAudioLoading] = useState(false);
     const [videoLoading, setVideoLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [audioError, setAudioError] = useState<string | null>(null);
     const [videoError, setVideoError] = useState<string | null>(null);
+
+    const generateVideoThumbnail = (videoUrl: string, videoId: number): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const video = document.createElement('video');
+            video.crossOrigin = 'anonymous';
+            video.currentTime = 1; // Capture frame at 1 second
+
+            video.onloadeddata = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                if (ctx) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(thumbnail);
+                } else {
+                    reject('Failed to get canvas context');
+                }
+            };
+
+            video.onerror = () => reject('Failed to load video');
+            video.src = videoUrl;
+        });
+    };
 
     useEffect(() => {
         const loadgalleryImages = async () => {
@@ -122,6 +151,20 @@ export default function Gallery() {
                 setVideoError(null);
                 const response = await fetchVideoFiles();
                 setVideoFiles(response);
+
+                // Generate thumbnails for videos without videoPosters
+                const thumbnails: { [key: number]: string } = {};
+                for (const video of response) {
+                    if (!video.video) {
+                        try {
+                            const thumbnail = await generateVideoThumbnail(getStrapiImageUrl(video.video), video.id);
+                            thumbnails[video.id] = thumbnail;
+                        } catch (error) {
+                            console.warn(`Failed to generate thumbnail for video ${video.id}:`, error);
+                        }
+                    }
+                }
+                setVideoThumbnails(thumbnails);
             } catch (err) {
                 console.error('Error fetching video files:', err);
                 setVideoError('Failed to load video files');
@@ -305,6 +348,11 @@ export default function Gallery() {
                                         controls
                                         className="w-full mb-8 max-h-96"
                                         preload="metadata"
+                                        poster={
+                                            video.videoPoster
+                                                ? getStrapiImageUrl(video.videoPoster)
+                                                : videoThumbnails[video.id]
+                                        }
                                     >
                                         <source src={getStrapiImageUrl(video.video)} type={video.video.mime} />
                                         Your browser does not support the video element.
@@ -318,14 +366,6 @@ export default function Gallery() {
                                         </p>
                                     </div>
 
-                                    <Button
-                                        variant="default"
-                                        onClick={() => handleVideoDownload(video)}
-                                        className="h-10 px-4 bg-white text-black hover:bg-gray-100"
-                                    >
-                                        <Download className="h-4 w-4 mr-2" />
-                                        {'Download ' + '(' + (video.video.size / 1000).toFixed(1) + ' MB)'}
-                                    </Button>
                                 </div>
                             ))}
                         </div>
@@ -375,17 +415,6 @@ export default function Gallery() {
                                             {audio.audioDescription}
                                         </p>
                                     </div>
-
-
-
-                                    <Button
-                                        variant="default"
-                                        onClick={() => handleAudioDownload(audio)}
-                                        className="h-10 px-4 bg-white text-black hover:bg-gray-100"
-                                    >
-                                        <Download className="h-4 w-4 mr-2" />
-                                        {'Download ' + '(' + (audio.audio.size / 1000).toFixed(1) + ' MB)'}
-                                    </Button>
                                 </div>
                             ))}
                         </div>
