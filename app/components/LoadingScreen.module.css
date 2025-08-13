@@ -68,12 +68,12 @@
 .imageRow {
     display: flex;
     align-items: center;
-    animation: slideImages 3s linear infinite;
+    animation: slideImages 6s linear infinite;
     width: max-content;
 }
 
 .mannequinImage {
-    margin: 0 5px;
+    margin: 0 8px;
     flex-shrink: 0;
     object-fit: contain;
 }
@@ -84,7 +84,7 @@
     }
 
     100% {
-        transform: translateX(-50%);
+        transform: translateX(calc(-100% / 3));
     }
 }
 
@@ -112,7 +112,7 @@
     .mannequinImage {
         width: 40px;
         height: 55px;
-        margin: 0 3px;
+        margin: 0 6px;
     }
 }
 
@@ -125,6 +125,6 @@
     .mannequinImage {
         width: 30px;
         height: 40px;
-        margin: 0 2px;
+        margin: 0 4px;
     }
 }

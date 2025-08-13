@@ -65,6 +65,7 @@ interface AboutUsPageData {
   gigsImage: StrapiImage;
   bandleaderImage: StrapiImage;
   galleryImage: StrapiImage;
+  pressImage: StrapiImage;
   contactImage: StrapiImage;
   castImage: StrapiImage;
   newsletterContactMailAdress: string;
@@ -133,6 +134,7 @@ export default function Home() {
           documentId: strapiData.data.documentId,
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
+          pressImage: strapiData.data.pressImage,
           aboutUsHistory: strapiData.data.aboutUsHistory,
           titlePhoto: strapiData.data.titlePhoto,
           impressumImage: strapiData.data.impressumImage,
@@ -278,6 +280,7 @@ export default function Home() {
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
           aboutUsHistory: strapiData.data.aboutUsHistory,
+          pressImage: strapiData.data.pressImage,
           titlePhoto: strapiData.data.titlePhoto,
           impressumImage: strapiData.data.impressumImage,
           gigsImage: strapiData.data.gigsImage,
@@ -314,7 +317,7 @@ export default function Home() {
       case "Kontakt":
         return getStrapiImageUrl(aboutUsData.contactImage);
       case "Presse":
-        return getStrapiImageUrl(aboutUsData.impressumImage); // Using impressum image as fallback for press
+        return getStrapiImageUrl(aboutUsData.pressImage);
       case "Impressum":
         return getStrapiImageUrl(aboutUsData.impressumImage);
       default:

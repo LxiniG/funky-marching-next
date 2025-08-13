@@ -11,20 +11,31 @@ interface LoadingScreenProps {
 
 const mannequinImages = [
     'ma1.png',
+    'ma2.png',
     'ma3.png',
     'ma4.png',
     'ma5.png',
+    'ma6.png'
 ];
+
+// Fisher-Yates shuffle algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+};
 
 export default function LoadingScreen({ isLoading, onAnimationComplete }: LoadingScreenProps) {
     const [isAnimating, setIsAnimating] = useState(false);
     const [minLoadingTimePassed, setMinLoadingTimePassed] = useState(false);
     const [shouldHide, setShouldHide] = useState(false);
 
+
     useEffect(() => {
-        // Set minimum loading time of 5 seconds
         const minLoadingTimer = setTimeout(() => {
-            console.log('Minimum loading time (5s) passed');
             setMinLoadingTimePassed(true);
         }, 2500);
 
@@ -59,11 +70,11 @@ export default function LoadingScreen({ isLoading, onAnimationComplete }: Loadin
             <div className={`${styles.topBox} ${isAnimating ? styles.animateTop : ''}`} />
             <div className={`${styles.bottomBox} ${isAnimating ? styles.animateBottom : ''}`} />
 
-            {!isAnimating && (
+            {!isAnimating && mannequinImages.length > 0 && (
                 <div className={styles.circleContainer}>
                     <div className={styles.circle}>
                         <div className={styles.imageRow}>
-                            {[...mannequinImages, ...mannequinImages].map((imageName, index) => (
+                            {[...mannequinImages, ...mannequinImages, ...mannequinImages].map((imageName, index) => (
                                 <Image
                                     key={index}
                                     src={`/fmb-loader-mannequins/${imageName}`}

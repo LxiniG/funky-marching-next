@@ -17,6 +17,7 @@ interface StrapiGalleryImage {
     imageDate: Date;
     imageTitle: string;
     image: StrapiImage;
+    imageCopyright?: string;
 }
 
 interface StrapiGalleryAudio {
@@ -183,30 +184,6 @@ export default function Gallery() {
         setIsDialogOpen(true);
     };
 
-    const handleAudioDownload = (item: StrapiGalleryAudio) => {
-        const audioUrl = item.audio.url;
-        const link = document.createElement('a');
-        link.href = audioUrl;
-        link.download = item.audio.name || 'audio-file';
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleVideoDownload = (item: StrapiGalleryVideo) => {
-        const videoUrl = getStrapiImageUrl(item.video);
-        const link = document.createElement('a');
-        link.href = videoUrl;
-        link.download = item.video.alternativeText || 'video-file';
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
     if (loading) {
         return (
             <div className={styles.container}>
@@ -304,10 +281,9 @@ export default function Gallery() {
                                 <Image
                                     src={getStrapiImageUrl(item.image)}
                                     alt={item.imageTitle}
+                                    layout="responsive"
                                     width={500}
-                                    height={500}
-                                    className={styles.previewImage}
-                                    style={{ objectFit: 'cover' }}
+                                    height={300}
                                 />
                                 <div className={styles.imageOverlay}>
                                     <h3 className={styles.imageCardTitle}>{item.imageTitle}</h3>
@@ -451,6 +427,11 @@ export default function Gallery() {
                                 <p className={styles.fullImageDescription}>
                                     {galleryImages[selectedImage].imageDescription}
                                 </p>
+                                {galleryImages[selectedImage].imageCopyright && (
+                                    <p className="text-xs text-muted-foreground mt-2 italic">
+                                        © {galleryImages[selectedImage].imageCopyright}
+                                    </p>
+                                )}
                             </div>
                         </>
                     )}

@@ -15,11 +15,27 @@ interface Props { }
 interface StrapiPressPage {
     id: number;
     pressTextPDF: StrapiFile;
-    pressImage1: StrapiImage;
-    pressImage2: StrapiImage;
-    pressImage3: StrapiImage;
     createdAt: string;
     updatedAt: string;
+}
+
+interface StrapiPressImage {
+    id: number;
+    image: StrapiImage;
+    imageDescription: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+async function fetchPressImages(): Promise<StrapiPressImage[]> {
+    const apiUrl = buildApiUrl('press-images?populate=*');
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch press images from Strapi");
+    }
+    const data = await response.json();
+    return data["data"];
 }
 
 async function fetchPressPage(): Promise<StrapiPressPage | null> {
@@ -34,11 +50,29 @@ async function fetchPressPage(): Promise<StrapiPressPage | null> {
 }
 
 const Page: NextPage<Props> = ({ }) => {
+    const [pressImages, setPressImages] = useState<StrapiPressImage[]>([]);
+    const [pressImagesLoading, setPressImagesLoading] = useState(true);
+    const [pressImagesError, setPressImagesError] = useState<string | null>(null);
     const [pressPage, setPressPage] = useState<StrapiPressPage | null>(null);
     const [pressPageLoading, setPressPageLoading] = useState(true);
     const [pressPageError, setPressPageError] = useState<string | null>(null);
 
     useEffect(() => {
+        const loadPressImages = async () => {
+            try {
+                setPressImagesLoading(true);
+                setPressImagesError(null);
+                const response = await fetchPressImages();
+                setPressImages(response);
+            } catch (err) {
+                console.error('Error fetching press images:', err);
+                setPressImagesError('Failed to load press images');
+            } finally {
+                setPressImagesLoading(false);
+            }
+        };
+        loadPressImages();
+
         const loadPressPage = async () => {
             try {
                 setPressPageLoading(true);
@@ -117,7 +151,7 @@ const Page: NextPage<Props> = ({ }) => {
                                 <h2>Pressetext</h2>
                             </div>
                             <p className={styles.pressKitDescription}>
-                                Laden Sie unseren offiziellen Pressetext mit allen wichtigen Informationen
+                                Lade unseren offiziellen Pressetext mit allen wichtigen Informationen
                                 über die Band, Bandmitglieder und aktuelle Projekte herunter.
                             </p>
                             <Button
@@ -154,7 +188,7 @@ const Page: NextPage<Props> = ({ }) => {
                         Alle Bilder sind zur kostenfreien Nutzung in Presseberichten freigegeben.
                     </p>
 
-                    {pressPageLoading ? (
+                    {pressImagesLoading ? (
                         <div className={styles.imageGrid}>
                             {Array.from({ length: 3 }).map((_, index) => (
                                 <div key={index} className={styles.imageCard}>
@@ -168,32 +202,31 @@ const Page: NextPage<Props> = ({ }) => {
                                 </div>
                             ))}
                         </div>
-                    ) : pressPageError ? (
+                    ) : pressImagesError ? (
                         <ErrorState message={pressPageError || 'Unknown error'} />
-                    ) : pressPage ? (
+                    ) : pressImages ? (
                         <div className={styles.imageGrid}>
-                            {[pressPage.pressImage1, pressPage.pressImage2, pressPage.pressImage3]
-                                .filter(image => image)
+                            {pressImages
                                 .map((image, index) => (
                                     <div key={image.id || index} className={styles.imageCard}>
                                         <div className={styles.imageWrapper}>
                                             <Image
-                                                src={getStrapiImageUrl(image)}
-                                                alt={image.alternativeText || `Pressebild ${index + 1}`}
-                                                width={300}
-                                                height={200}
+                                                src={getStrapiImageUrl(image.image)}
+                                                alt={image.imageDescription || `Pressebild ${index + 1}`}
+                                                width={image.image.width}
+                                                height={image.image.height}
                                                 className={styles.pressImage}
                                                 style={{ objectFit: 'cover' }}
                                             />
                                         </div>
                                         <div className={styles.imageInfo}>
                                             <h3 className={styles.imageTitle}>
-                                                {image.alternativeText || `Pressebild ${index + 1}`}
+                                                {image.imageDescription || `Pressebild ${index + 1}`}
                                             </h3>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => handleDownloadImage(image)}
+                                                onClick={() => handleDownloadImage(image.image)}
                                                 className={styles.downloadButton}
                                             >
                                                 <Download className="w-3 h-3 mr-1" />
