@@ -282,8 +282,8 @@ export default function Gallery() {
                                     src={getStrapiImageUrl(item.image)}
                                     alt={item.imageTitle}
                                     layout="responsive"
-                                    width={500}
-                                    height={300}
+                                    width={item.image.width}
+                                    height={item.image.height}
                                 />
                                 <div className={styles.imageOverlay}>
                                     <h3 className={styles.imageCardTitle}>{item.imageTitle}</h3>

@@ -302,26 +302,25 @@ export default function Home() {
   };
 
   // Function to get the appropriate Strapi image for each page
-  const getStrapiImageForPage = (pageTitle: string): string => {
-    if (!aboutUsData) return "";
+  const getStrapiImageForPage = (pageTitle: string): StrapiImage => {
 
     switch (pageTitle) {
       case "Gigs":
-        return getStrapiImageUrl(aboutUsData.gigsImage);
+        return aboutUsData!.gigsImage;
       case "Besetzung":
-        return getStrapiImageUrl(aboutUsData.castImage);
+        return aboutUsData!.castImage;
       case "Bandleader":
-        return getStrapiImageUrl(aboutUsData.bandleaderImage);
+        return aboutUsData!.bandleaderImage;
       case "Galerie":
-        return getStrapiImageUrl(aboutUsData.galleryImage);
+        return aboutUsData!.galleryImage;
       case "Kontakt":
-        return getStrapiImageUrl(aboutUsData.contactImage);
+        return aboutUsData!.contactImage;
       case "Presse":
-        return getStrapiImageUrl(aboutUsData.pressImage);
+        return aboutUsData!.pressImage;
       case "Impressum":
-        return getStrapiImageUrl(aboutUsData.impressumImage);
+        return aboutUsData!.impressumImage;
       default:
-        return getStrapiImageUrl(aboutUsData.impressumImage); // Default fallback
+        return aboutUsData!.impressumImage; // Default fallback
     }
   };  // Check if all loading is complete
   const isAllDataLoaded = !isAboutUsLoading && !isGigLoading;
@@ -461,7 +460,7 @@ export default function Home() {
                     key={index}
                     title={page.title}
                     description={page.description}
-                    imageUrl={getStrapiImageForPage(page.title)}
+                    image={getStrapiImageForPage(page.title)}
                     linkUrl={page.linkUrl}
                   />
                 ))}
