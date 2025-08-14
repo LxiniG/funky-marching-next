@@ -1,6 +1,7 @@
 "use client";
 import ErrorState from "@/components/custom/error-state/ErrorState";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from "@/lib/strapi-url";
 import { StrapiFile, StrapiImage } from "@/types/strapi";
@@ -23,6 +24,7 @@ interface StrapiPressImage {
     id: number;
     image: StrapiImage;
     imageDescription: string;
+    imageCopyright?: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -35,7 +37,10 @@ async function fetchPressImages(): Promise<StrapiPressImage[]> {
         throw new Error("Failed to fetch press images from Strapi");
     }
     const data = await response.json();
-    return data["data"];
+    return data["data"].map((item: StrapiPressImage) => ({
+        ...item,
+        imageCopyright: item.imageCopyright ?? "Unbekannt",
+    }));
 }
 
 async function fetchPressPage(): Promise<StrapiPressPage | null> {
@@ -56,6 +61,8 @@ const Page: NextPage<Props> = ({ }) => {
     const [pressPage, setPressPage] = useState<StrapiPressPage | null>(null);
     const [pressPageLoading, setPressPageLoading] = useState(true);
     const [pressPageError, setPressPageError] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<StrapiPressImage | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         const loadPressImages = async () => {
@@ -109,6 +116,11 @@ const Page: NextPage<Props> = ({ }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const handleImageClick = (pressImage: StrapiPressImage) => {
+        setSelectedImage(pressImage);
+        setIsDialogOpen(true);
     };
 
     return (
@@ -209,7 +221,11 @@ const Page: NextPage<Props> = ({ }) => {
                             {pressImages
                                 .map((image, index) => (
                                     <div key={image.id || index} className={styles.imageCard}>
-                                        <div className={styles.imageWrapper}>
+                                        <div
+                                            className={styles.imageWrapper}
+                                            onClick={() => handleImageClick(image)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
                                             <Image
                                                 src={getStrapiImageUrl(image.image)}
                                                 alt={image.imageDescription || `Pressebild ${index + 1}`}
@@ -223,6 +239,11 @@ const Page: NextPage<Props> = ({ }) => {
                                             <h3 className={styles.imageTitle}>
                                                 {image.imageDescription || `Pressebild ${index + 1}`}
                                             </h3>
+                                            {image.imageCopyright && (
+                                                <p className="text-xs text-muted-foreground mb-2 italic">
+                                                    © {image.imageCopyright}
+                                                </p>
+                                            )}
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -241,6 +262,22 @@ const Page: NextPage<Props> = ({ }) => {
                     )}
                 </div>
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="max-w-4xl w-full p-0 bg-transparent overflow-hidden">
+                    {selectedImage && (
+                        <>
+                            <Image
+                                src={getStrapiImageUrl(selectedImage.image)}
+                                alt={selectedImage.imageDescription || 'Pressebild'}
+                                width={selectedImage.image.width}
+                                height={selectedImage.image.height}
+                                className="max-w-full max-h-[70vh] object-contain"
+                            />
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

@@ -1,15 +1,19 @@
 
 "use client";
 
+import ErrorState from "@/components/custom/error-state/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { buildApiUrl } from "@/lib/strapi-url";
 import { Gig, StrapiGigResponse } from '@/types';
 import { useEffect, useState } from 'react';
 import styles from './Gigs.module.css';
 
 async function getGigs() {
-    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_API_URL ?? 'http://localhost:1337';
-    const api = '/api/gigs'
 
-    const url = new URL(api, baseUrl)
+    const url = buildApiUrl("/gigs");
+
+    console.log("🚀 ~ getGigs ~ url:", url);
+
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -65,7 +69,30 @@ const GigsPage = () => {
             <div style={{ position: 'relative', minHeight: '100vh' }}>
                 <div className={styles['gigs-red-hue']} />
                 <div className={styles.container}>
-                    <p>Gigs werden geladen...</p>
+                    <div className={styles.timeline}>
+                        <div className={`${styles['timeline-item']} ${styles['current-date-marker']}`}>
+                            <div className={styles['timeline-date-box']}>
+                                <p className={styles.month}>{today.toLocaleString('de-DE', { month: 'short' })}</p>
+                                <h2 className={styles.day}>{today.getDate()}</h2>
+                            </div>
+                            <div className={styles['timeline-content']}>
+                                <p className={styles['timeline-date']}>Heute</p>
+                            </div>
+                        </div>
+                        {Array.from({ length: 5 }).map((_, index) => (
+                            <div key={index} className={styles['timeline-item']}>
+                                <div className={styles['timeline-date-box']}>
+                                    <Skeleton className="h-4 w-8 mb-1" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                                <div className={styles['timeline-content']}>
+                                    <Skeleton className="h-6 w-48 mb-2" />
+                                    <Skeleton className="h-4 w-32 mb-2" />
+                                    <Skeleton className="h-4 w-40" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );
@@ -73,12 +100,7 @@ const GigsPage = () => {
 
     if (error) {
         return (
-            <div style={{ position: 'relative', minHeight: '100vh' }}>
-                <div className={styles['gigs-red-hue']} />
-                <div className={styles.container}>
-                    <p>Error: {error}</p>
-                </div>
-            </div>
+            <ErrorState title="Error fetching gigs" message={error}></ErrorState>
         );
     }
 
