@@ -9,7 +9,7 @@ const Page: NextPage<Props> = ({ }) => {
         <section>
             <h2>Verantwortlich für den Inhalt</h2>
             <p>Verein Musik in Bewegung e.V.<br />
-                Vorsitzende: Michaela Klukas<br />
+                Vorsitzende: Sabine Mahner<br />
                 Neunlindenstr. 34<br />
                 79106 Freiburg<br />
                 funkymarchingband@t-online.de</p>

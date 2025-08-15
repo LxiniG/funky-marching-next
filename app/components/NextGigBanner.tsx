@@ -40,7 +40,7 @@ const NextGigBanner: NextPage<Props> = ({ isVisible, gig }) => {
             <h2>{formattedDate}</h2>
             <div className={styles.nextGigBoxContent}>
                 <p>Unser nächster Gig:</p>
-                <p>{gig.gigTitle || 'Auftritt'}</p>
+                <p>{'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}</p>
             </div>
         </Link>
     );

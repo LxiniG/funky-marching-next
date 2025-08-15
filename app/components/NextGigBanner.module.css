@@ -3,9 +3,14 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
-    /* Allow content to shrink */
-    flex: 1;
-    /* Take up available space */
+}
+
+.nextGigBoxContent p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .nextGigBox {
@@ -31,9 +36,8 @@
         transform 0.2s ease,
         box-shadow 0.2s ease;
     text-decoration: none;
-    width: max-content;
-    max-width: calc(100vw - 40px);
-    white-space: nowrap;
+    width: 90vw;
+    max-width: 800px;
 }
 
 .nextGigBox:hover {
