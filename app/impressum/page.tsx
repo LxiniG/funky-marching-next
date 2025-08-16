@@ -10,8 +10,8 @@ const Page: NextPage<Props> = ({ }) => {
             <h2>Verantwortlich für den Inhalt</h2>
             <p>Verein Musik in Bewegung e.V.<br />
                 Vorsitzende: Sabine Mahner<br />
-                Neunlindenstr. 34<br />
-                79106 Freiburg<br />
+                Lerchenfeldstr. 7<br />
+                79199 Kirchzarten<br />
                 funkymarchingband@t-online.de</p>
         </section>
         <section>
