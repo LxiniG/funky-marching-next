@@ -470,10 +470,7 @@ export default function Home() {
 
           <BackToTopButton />
         </div>
-
-
       )}
-
       <Toaster />
     </>
   );

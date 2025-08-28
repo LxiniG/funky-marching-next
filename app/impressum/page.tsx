@@ -8,7 +8,7 @@ const Page: NextPage<Props> = ({ }) => {
         <h1>Impressum</h1>
         <section>
             <h2>Verantwortlich für den Inhalt</h2>
-            <p>Verein Musik in Bewegung e.V.<br />
+            <p>Musik in Bewegung e.V.<br />
                 Vorsitzende: Sabine Mahner<br />
                 Lerchenfeldstr. 7<br />
                 79199 Kirchzarten<br />
