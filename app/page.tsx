@@ -246,7 +246,7 @@ export default function Home() {
 
     if (result.success) {
       toast.success(`Boom, ${firstName}! Ab jetzt bist Du immer auf dem neuesten funky Stand.`, {
-        description: "Die Bestätigungsmail ist unterwegs.",
+        description: "Du bekommst in Zukunft Mails von der FMB.",
         duration: 5000,
       });
 

@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from "@/lib/strapi-url";
 import { StrapiAudio, StrapiImage } from "@/types/strapi";
-import { Image as ImageIcon, Music, Video, X } from "lucide-react";
+import { Image as ImageIcon, Music, Video, X, ZoomIn } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import styles from "./Gallery.module.css";
@@ -271,6 +271,14 @@ export default function Gallery() {
                 </TabsList>
 
                 <TabsContent value="images" className={styles.tabContent}>
+                    {/* Info box for clicking images */}
+                    <div className="flex items-center justify-center gap-2 mb-6 px-4 py-2 bg-muted/30 border border-border rounded-lg max-w-fit mx-auto">
+                        <ZoomIn className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">
+                            Zum Vergrößern der Bilder anklicken
+                        </span>
+                    </div>
+
                     <div className={styles.imageGrid}>
                         {galleryImages.map((item, index) => (
                             <div
