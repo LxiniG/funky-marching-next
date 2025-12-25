@@ -5,7 +5,7 @@ import { StrapiImage } from '@/types/strapi';
 import { ArrowLeft, ArrowRight, X, ZoomIn } from 'lucide-react';
 import { NextPage } from 'next';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './ImageTab.module.css';
 
 interface Props { }
@@ -39,6 +39,11 @@ const ImageTab: NextPage<Props> = ({ }) => {
     const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
+    // swipe / drag state
+    const startX = useRef<number | null>(null);
+    const currentX = useRef<number>(0);
+    const isDragging = useRef<boolean>(false);
+    const [dragX, setDragX] = useState<number>(0);
 
     const handleImageClick = (index: number) => {
         setSelectedImage(index);
@@ -71,6 +76,16 @@ const ImageTab: NextPage<Props> = ({ }) => {
         };
         loadGalleryImages();
     }, [])
+
+    // Reset drag state when dialog closes or selection changes
+    useEffect(() => {
+        if (!isDialogOpen) {
+            isDragging.current = false;
+            setDragX(0);
+            startX.current = null;
+            currentX.current = 0;
+        }
+    }, [isDialogOpen, selectedImage]);
 
     return <div>
         {/* Info box for clicking images */}
@@ -114,15 +129,80 @@ const ImageTab: NextPage<Props> = ({ }) => {
                             <X className="h-4 w-4" />
                         </Button>
 
-                        <div className="flex flex-center overflow-hidden justify-center">
+                        <div
+                            className="flex flex-center overflow-hidden justify-center"
+                            // touchAction allows vertical scrolling but gives us horizontal swipe control
+                            style={{ touchAction: 'pan-y' }}
+                            onTouchStart={(e) => {
+                                if (selectedImage == null) return;
+                                startX.current = e.touches[0].clientX;
+                                isDragging.current = true;
+                            }}
+                            onTouchMove={(e) => {
+                                if (!isDragging.current || startX.current == null) return;
+                                const x = e.touches[0].clientX;
+                                currentX.current = x - startX.current;
+                                setDragX(currentX.current);
+                            }}
+                            onTouchEnd={() => {
+                                if (!isDragging.current) return;
+                                const delta = currentX.current;
+                                isDragging.current = false;
+                                setDragX(0);
+                                startX.current = null;
+                                currentX.current = 0;
+                                const threshold = 50;
+                                if (Math.abs(delta) > threshold) {
+                                    if (delta < 0) handeNextImageClick();
+                                    else handlePrevImageClick();
+                                }
+                            }}
+                            onMouseDown={(e) => {
+                                if (selectedImage == null) return;
+                                startX.current = e.clientX;
+                                isDragging.current = true;
+                            }}
+                            onMouseMove={(e) => {
+                                if (!isDragging.current || startX.current == null) return;
+                                const x = e.clientX;
+                                currentX.current = x - startX.current;
+                                setDragX(currentX.current);
+                            }}
+                            onMouseUp={() => {
+                                if (!isDragging.current) return;
+                                const delta = currentX.current;
+                                isDragging.current = false;
+                                setDragX(0);
+                                startX.current = null;
+                                currentX.current = 0;
+                                const threshold = 50;
+                                if (Math.abs(delta) > threshold) {
+                                    if (delta < 0) handeNextImageClick();
+                                    else handlePrevImageClick();
+                                }
+                            }}
+                            onMouseLeave={() => {
+                                // treat leaving as end of drag
+                                if (!isDragging.current) return;
+                                const delta = currentX.current;
+                                isDragging.current = false;
+                                setDragX(0);
+                                startX.current = null;
+                                currentX.current = 0;
+                                const threshold = 50;
+                                if (Math.abs(delta) > threshold) {
+                                    if (delta < 0) handeNextImageClick();
+                                    else handlePrevImageClick();
+                                }
+                            }}
+                        >
                             <Image
                                 className='block w-full h-auto object-contain'
-
+                                style={{ transform: `translateX(${dragX}px)`, transition: isDragging.current ? 'none' : 'transform 200ms ease' }}
                                 src={getStrapiImageUrl(galleryImages[selectedImage].image)}
                                 alt={galleryImages[selectedImage].imageTitle}
                                 width={galleryImages[selectedImage].image.width}
                                 height={galleryImages[selectedImage].image.height}
-
                             />
                         </div>
 

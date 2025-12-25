@@ -6,7 +6,6 @@ import { buildApiUrl } from "@/lib/strapi-url";
 import { StrapiAudio } from "@/types/strapi";
 import { Image as ImageIcon, Music, Video } from "lucide-react";
 import { useEffect, useState } from "react";
-// Using Tailwind utilities instead of Gallery.module.css
 import ImageTab from "./tabs/ImageTab";
 import VideoTab from "./tabs/VideoTab";
 
@@ -33,11 +32,7 @@ async function fetchAudioFiles(): Promise<StrapiGalleryAudio[]> {
 }
 
 export default function Gallery() {
-    const [selectedImage, setSelectedImage] = useState<number | null>(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
     const [audioFiles, setAudioFiles] = useState<StrapiGalleryAudio[]>([]);
-    const [loading, setLoading] = useState(true);
     const [audioLoading, setAudioLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [audioError, setAudioError] = useState<string | null>(null);
@@ -60,13 +55,6 @@ export default function Gallery() {
     }, []);
 
 
-
-
-    const handleImageClick = (index: number) => {
-        setSelectedImage(index);
-        setIsDialogOpen(true);
-    };
-
     return (
 
         <div className="flex flex-col w-full max-w-[1000px] items-center justify-center mt-[60px] mx-auto pb-[60px] relative z-10">
@@ -79,7 +67,7 @@ export default function Gallery() {
                 <ErrorState message="Bilder konnten nicht geladen werden."></ErrorState>
             )}
 
-            <Tabs defaultValue="videos" className="w-full flex flex-col items-center">
+            <Tabs defaultValue="images" className="w-full flex flex-col items-center">
                 <TabsList className="flex justify-center mb-12 bg-muted rounded-[12px] p-[6px] h-[60px] items-center">
                     <TabsTrigger value="images" className="flex items-center px-8 py-4 rounded-lg font-medium transition-all duration-200 h-[48px]">
                         <ImageIcon className="w-4 h-4 mr-2" />

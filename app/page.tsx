@@ -118,7 +118,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
 
   // Email hook for newsletter subscriptions
-  const { sendNewsletterSubscriptionEmail, isLoading: isEmailLoading, error: emailError } = useSendEmail();
+  const { sendNewsletterSubscriptionEmail, isLoading: isEmailLoading, error: emailError, isOnCooldown, cooldownRemaining } = useSendEmail();
 
   useEffect(() => {
     console.log('🚀 AboutUs useEffect triggered');
@@ -229,13 +229,13 @@ export default function Home() {
     e.preventDefault();
 
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      toast.error("Bitte fülle alle Felder aus.");
+      toast.error("Bitte füllen Sie alle Felder aus.");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Bitte gib eine gültige E-Mail-Adresse ein.");
+      toast.error("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
       return;
     }
 
@@ -245,8 +245,8 @@ export default function Home() {
     const result = await sendNewsletterSubscriptionEmail(aboutUsData?.newsletterContactMailAdress || "", email, firstName, lastName);
 
     if (result.success) {
-      toast.success(`Boom, ${firstName}! Ab jetzt bist Du immer auf dem neuesten funky Stand.`, {
-        description: "Du bekommst in Zukunft Mails von der FMB.",
+      toast.success(`Das hat geklappt!`, {
+        description: "Ab jetzt bekommen Sie den Newsletter der Funky Marching Band :)",
         duration: 5000,
       });
 
@@ -255,7 +255,7 @@ export default function Home() {
       setEmail("");
     } else {
       toast.error("Fehler beim Senden der Anmeldung.", {
-        description: result.error || "Bitte versuche es später erneut.",
+        description: result.error || "Bitte versuchen Sie es später erneut.",
         duration: 5000,
       });
     }
@@ -440,8 +440,8 @@ export default function Home() {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isEmailLoading}
                 />
-                <Button type="submit" className="mt-5" disabled={isEmailLoading}>
-                  {isEmailLoading ? "Sende..." : "Abonnieren"}
+                <Button type="submit" className="mt-5" disabled={isEmailLoading || isOnCooldown}>
+                  {isEmailLoading ? "Sende..." : isOnCooldown ? `Warte ${cooldownRemaining}s` : "Abonnieren"}
                 </Button>
               </form>
               <div className="blue-drop"></div>

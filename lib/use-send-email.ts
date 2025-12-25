@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { buildApiUrl } from './strapi-url';
 
 
@@ -16,11 +16,16 @@ interface SendEmailResponse {
     data?: any;
 }
 
-export function useSendEmail() {
+export function useSendEmail(cooldownSeconds = 10) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+    const cooldownRef = useRef<number | null>(null);
+    const intervalRef = useRef<number | null>(null);
 
     const sendEmail = async (options: EmailOptions): Promise<SendEmailResponse> => {
+        // start optimistic cooldown to prevent rapid repeated clicks
+        startCooldown();
         setIsLoading(true);
         setError(null);
 
@@ -77,6 +82,39 @@ export function useSendEmail() {
         }
     };
 
+    function startCooldown() {
+        // If already cooling down, do nothing
+        if (cooldownRef.current && Date.now() < cooldownRef.current) return;
+        const end = Date.now() + cooldownSeconds * 1000;
+        cooldownRef.current = end;
+        setCooldownRemaining(cooldownSeconds);
+
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+
+        intervalRef.current = window.setInterval(() => {
+            if (!cooldownRef.current) return;
+            const remaining = Math.max(0, Math.ceil((cooldownRef.current - Date.now()) / 1000));
+            setCooldownRemaining(remaining);
+            if (remaining <= 0 && intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+                cooldownRef.current = null;
+            }
+        }, 250) as unknown as number;
+    }
+
+    useEffect(() => {
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            }
+        };
+    }, []);
+
     const sendNewsletterSubscriptionEmail = async (newsletterContactMailAdress: string, subscriberEmail: string, firstName?: string, lastName?: string): Promise<SendEmailResponse> => {
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : 'Name nicht angegeben';
 
@@ -106,5 +144,7 @@ export function useSendEmail() {
         sendNewsletterSubscriptionEmail,
         isLoading,
         error,
+        cooldownRemaining,
+        isOnCooldown: cooldownRemaining > 0,
     };
 }
