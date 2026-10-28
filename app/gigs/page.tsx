@@ -64,6 +64,50 @@ const GigsPage = () => {
         .filter(gig => gig.gigStartDate >= today)
         .sort((a, b) => a.gigStartDate.getTime() - b.gigStartDate.getTime());
 
+    const pastGigs = gigs
+        .filter(gig => gig.gigStartDate < today)
+        .sort((a, b) => b.gigStartDate.getTime() - a.gigStartDate.getTime());
+
+    const renderGigEntries = (gigList: Gig[]) => (
+        gigList.map((gig) => {
+            const key = `${gig.gigTitle}-${gig.gigStartDate.toISOString()}`;
+
+            return (
+                <div key={key} className={styles['timeline-item']}>
+                    <div className={styles['timeline-date-box']}>
+                        <p className={styles.month}>{gig.gigStartDate.toLocaleString('de-DE', { month: 'short' })}</p>
+                        <h2 className={styles.day}>{gig.gigStartDate.getDate()}</h2>
+                    </div>
+                    {gig.gigLink && (
+                        <a
+                            href={gig.gigLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles['timeline-float-link']}
+                        >
+                            <div className={styles['timeline-float-box']}>
+                                <p className={styles['timeline-tickets-link']}>Zur Website</p>
+                            </div>
+                        </a>
+                    )}
+
+                    <div
+                        onClick={() => gig.gigLink && window.open(gig.gigLink, '_blank', 'noopener,noreferrer')}
+                        className={styles['timeline-content']}
+                        style={{ cursor: gig.gigLink ? 'pointer' : 'default' }}
+                    >
+                        <h2>{gig.gigTitle}</h2>
+                        <p className={styles['timeline-date']}>
+                            {gig.gigStartDate.toLocaleDateString('de-DE')}
+                            <span> - {gig.gigStartDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</span>
+                        </p>
+                        <p>{gig.gigLocation}</p>
+                    </div>
+                </div>
+            );
+        })
+    );
+
     if (loading) {
         return (
             <div style={{ position: 'relative', minHeight: '100vh' }}>
@@ -120,39 +164,13 @@ const GigsPage = () => {
                             <p className={styles['timeline-date']}>Heute</p>
                         </div>
                     </div>
-                    {upcomingGigs.map((gig, index) => (
-                        <div key={index} className={styles['timeline-item']}>
-                            <div className={styles['timeline-date-box']}>
-                                <p className={styles.month}>{gig.gigStartDate.toLocaleString('de-DE', { month: 'short' })}</p>
-                                <h2 className={styles.day}>{gig.gigStartDate.getDate()}</h2>
-                            </div>
-                            {gig.gigLink && (
-                                <a
-                                    href={gig.gigLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles['timeline-float-link']}
-                                >
-                                    <div className={styles['timeline-float-box']}>
-                                        <p className={styles['timeline-tickets-link']}>Zur Website</p>
-                                    </div>
-                                </a>
-                            )}
+                    {renderGigEntries(upcomingGigs)}
 
-                            <div
-                                onClick={() => gig.gigLink && window.open(gig.gigLink, '_blank', 'noopener,noreferrer')}
-                                className={styles['timeline-content']}
-                                style={{ cursor: gig.gigLink ? 'pointer' : 'default' }}
-                            >
-                                <h2>{gig.gigTitle}</h2>
-                                <p className={styles['timeline-date']}>
-                                    {gig.gigStartDate.toLocaleDateString('de-DE')}
-                                    <span> - {gig.gigStartDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr</span>
-                                </p>
-                                <p>{gig.gigLocation}</p>
-                            </div>
-                        </div>
-                    ))}
+                    {pastGigs.length > 0 && (
+                        <div className={styles['past-gigs-header']}>Vergangene Gigs</div>
+                    )}
+
+                    {renderGigEntries(pastGigs)}
                 </div>
             </div>
         </div>
