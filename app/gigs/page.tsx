@@ -8,21 +8,31 @@ import { Gig, StrapiGigResponse } from '@/types';
 import { useEffect, useState } from 'react';
 import styles from './Gigs.module.css';
 
-async function getGigs() {
+async function getGigs(): Promise<StrapiGigResponse> {
+    const pageSize = 100;
+    const fetchPage = async (page: number): Promise<StrapiGigResponse> => {
+        const url = buildApiUrl(
+            `/gigs?sort=gigStartDate:asc&pagination[page]=${page}&pagination[pageSize]=${pageSize}`
+        );
+        const res = await fetch(url);
 
-    const url = buildApiUrl("/gigs");
+        if (!res.ok) {
+            throw new Error("Failed to fetch gigs from Strapi");
+        }
 
-    console.log("🚀 ~ getGigs ~ url:", url);
+        return res.json();
+    };
 
-    const res = await fetch(url);
+    const firstPage = await fetchPage(1);
+    const pageCount = firstPage.meta.pagination.pageCount;
+    const remainingPages = await Promise.all(
+        Array.from({ length: pageCount - 1 }, (_, index) => fetchPage(index + 2))
+    );
 
-    if (!res.ok) {
-        throw new Error("Failed to fetch gigs from Strapi");
-    }
-
-    const data = await res.json();
-    console.log("🚀 ~ getGigs ~ data:", data)
-    return data;
+    return {
+        ...firstPage,
+        data: [...firstPage.data, ...remainingPages.flatMap(page => page.data)]
+    };
 }
 
 function mapStrapiDataToGigs(strapiResponse: StrapiGigResponse): Gig[] {
