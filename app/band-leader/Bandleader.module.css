@@ -40,7 +40,7 @@
 
 /* Name */
 .name {
-    font-size: 3rem;
+    font-size: var(--font-size-h1);
     font-weight: 900;
     color: var(--foreground);
     margin: 0;
@@ -53,7 +53,7 @@
     max-width: 600px;
     line-height: 1.7;
     color: var(--muted-foreground);
-    font-size: 1.1rem;
+    font-size: var(--font-size-p);
 }
 
 .textContent p {
@@ -81,12 +81,7 @@
         height: 250px;
     }
 
-    .name {
-        font-size: 2.5rem;
-    }
-
     .textContent {
-        font-size: 1rem;
         max-width: 100%;
     }
 }
@@ -100,14 +95,6 @@
     .imageContainer {
         width: 200px;
         height: 200px;
-    }
-
-    .name {
-        font-size: 2rem;
-    }
-
-    .textContent {
-        font-size: 0.95rem;
     }
 
     .textContent p {

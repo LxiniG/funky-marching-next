@@ -4,7 +4,7 @@
     color: black;
     border: none;
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: var(--font-size-p);
     cursor: pointer;
     border-radius: 12px;
     transition: transform 0.2s ease-in-out;
@@ -20,7 +20,7 @@
 
 .buttonText {
     font-weight: bold;
-    font-size: 1rem;
+    font-size: var(--font-size-p);
     color: black;
 }
 

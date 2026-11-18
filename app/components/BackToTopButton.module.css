@@ -32,7 +32,7 @@
 }
 
 .arrow {
-    font-size: 30px;
+    font-size: var(--font-size-h2);
     color: white;
     transition: transform 0.5s ease-in-out;
 }

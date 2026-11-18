@@ -107,7 +107,7 @@ export default function CastPage() {
 
         {castPageLoading && <Skeleton className="h-8 w-1/2 mx-auto" />}
         {!castPageLoading && <>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {castPage?.castHeading || "Unsere Besetzungen"}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">

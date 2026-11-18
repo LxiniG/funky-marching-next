@@ -47,10 +47,10 @@
     }
 
     .errorTitle {
-        font-size: 1.25rem;
+        font-size: var(--font-size-h2);
     }
 
     .errorMessage {
-        font-size: 0.9rem;
+        font-size: var(--font-size-p);
     }
 }

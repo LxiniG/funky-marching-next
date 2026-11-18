@@ -52,7 +52,7 @@
 }
 
 .title {
-    font-size: 1.2rem;
+    font-size: var(--font-size-h3);
     font-weight: 600;
     margin: 0 0 8px 0;
     color: var(--foreground);
@@ -60,7 +60,7 @@
 }
 
 .description {
-    font-size: 0.9rem;
+    font-size: var(--font-size-small);
     color: var(--muted-foreground);
     margin: 0;
     line-height: 1.4;
@@ -80,14 +80,6 @@
         scroll-snap-align: start;
     }
 
-    .title {
-        font-size: 1.1rem;
-    }
-
-    .description {
-        font-size: 0.85rem;
-    }
-
     .content {
         padding: 16px;
     }
@@ -97,14 +89,6 @@
     .previewContainer {
         width: 220px;
         height: 260px;
-    }
-
-    .title {
-        font-size: 1rem;
-    }
-
-    .description {
-        font-size: 0.8rem;
     }
 
     .content {
