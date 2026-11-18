@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toaster } from "@/components/ui/sonner";
 import { buildApiUrl, getImageUrl as getStrapiImageUrl } from '@/lib/strapi-url';
-import { useSendEmail } from '@/lib/use-send-email';
 import { Gig, StrapiGigResponse, StrapiImage } from '@/types';
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -68,7 +67,6 @@ interface AboutUsPageData {
   pressImage: StrapiImage;
   contactImage: StrapiImage;
   castImage: StrapiImage;
-  newsletterContactMailAdress: string;
 }
 
 async function getNextGig(): Promise<StrapiGigResponse> {
@@ -101,6 +99,27 @@ async function getAboutUsData(): Promise<any> {
   return data;
 }
 
+interface NewsletterSubscription {
+  adress: string;
+  firstName: string;
+  lastName: string;
+  subscribedSince: string;
+}
+
+async function createNewsletterSubscription(subscription: NewsletterSubscription): Promise<void> {
+  const response = await fetch(buildApiUrl('newsletter-mail-adresses'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ data: subscription }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Newsletter subscription failed (HTTP ${response.status})`);
+  }
+}
+
 export default function Home() {
   const [rotate, setRotate] = useState({ x: 5, y: 5 });
   const [isBannerVisible, setIsBannerVisible] = useState(true);
@@ -116,9 +135,7 @@ export default function Home() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-
-  // Email hook for newsletter subscriptions
-  const { sendNewsletterSubscriptionEmail, isLoading: isEmailLoading, error: emailError, isOnCooldown, cooldownRemaining } = useSendEmail();
+  const [isNewsletterSubmitting, setIsNewsletterSubmitting] = useState(false);
 
   useEffect(() => {
     console.log('🚀 AboutUs useEffect triggered');
@@ -130,7 +147,6 @@ export default function Home() {
         console.log('🚀 Received about us data:', strapiData);
         const mappedData: AboutUsPageData = {
           id: strapiData.data.id,
-          newsletterContactMailAdress: strapiData.data.newsletterContactMailAdress,
           documentId: strapiData.data.documentId,
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
@@ -234,17 +250,20 @@ export default function Home() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    const normalizedEmail = email.trim();
+    if (!emailRegex.test(normalizedEmail)) {
       toast.error("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
       return;
     }
 
-    console.log('Newsletter subscription:', { firstName, lastName, email });
-
-    // Send newsletter subscription email
-    const result = await sendNewsletterSubscriptionEmail(aboutUsData?.newsletterContactMailAdress || "", email, firstName, lastName);
-
-    if (result.success) {
+    setIsNewsletterSubmitting(true);
+    try {
+      await createNewsletterSubscription({
+        adress: normalizedEmail,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        subscribedSince: new Date().toISOString(),
+      });
       toast.success(`Das hat geklappt!`, {
         description: "Ab jetzt bekommen Sie den Newsletter der Funky Marching Band :)",
         duration: 5000,
@@ -253,11 +272,14 @@ export default function Home() {
       setFirstName("");
       setLastName("");
       setEmail("");
-    } else {
+    } catch (err) {
+      console.error("Error creating newsletter subscription:", err);
       toast.error("Fehler beim Senden der Anmeldung.", {
-        description: result.error || "Bitte versuchen Sie es später erneut.",
+        description: err instanceof Error ? err.message : "Bitte versuchen Sie es später erneut.",
         duration: 5000,
       });
+    } finally {
+      setIsNewsletterSubmitting(false);
     }
   };
 
@@ -275,7 +297,6 @@ export default function Home() {
         const strapiData = await getAboutUsData();
         const mappedData: AboutUsPageData = {
           id: strapiData.data.id,
-          newsletterContactMailAdress: strapiData.data.newsletterContactMailAdress,
           documentId: strapiData.data.documentId,
           aboutUsQuote: strapiData.data.aboutUsQuote,
           aboutUsText: strapiData.data.aboutUsText,
@@ -423,14 +444,14 @@ export default function Home() {
                     placeholder="Vorname"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    disabled={isEmailLoading}
+                    disabled={isNewsletterSubmitting}
                   />
                   <Input
                     type="text"
                     placeholder="Nachname"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    disabled={isEmailLoading}
+                    disabled={isNewsletterSubmitting}
                   />
                 </div>
                 <Input
@@ -438,10 +459,10 @@ export default function Home() {
                   placeholder="Email hier eingeben"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={isEmailLoading}
+                  disabled={isNewsletterSubmitting}
                 />
-                <Button type="submit" className="mt-5" disabled={isEmailLoading || isOnCooldown}>
-                  {isEmailLoading ? "Sende..." : isOnCooldown ? `Warte ${cooldownRemaining}s` : "Abonnieren"}
+                <Button type="submit" className="mt-5" disabled={isNewsletterSubmitting}>
+                  {isNewsletterSubmitting ? "Sende..." : "Abonnieren"}
                 </Button>
               </form>
               <div className="blue-drop"></div>
